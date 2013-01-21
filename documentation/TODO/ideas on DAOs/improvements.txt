@@ -1,0 +1,44 @@
+-Se puede tener, en vez de una funcion crearListaResultados(rs) y crearObjetoResultado(rs), tener solo una funcion: crearObjetoResultado(rs). Asi, la funcion se puede llamar desde GeneralDAO, de la siguiente forma:
+
+if(rs.next()) {
+	obj = mapper.crearObjetoResultado();
+}
+
+...o...
+
+while(rs.next()) {
+	lstObjs.add(mapper.crearObjetoResultado());
+}
+
+De esta forma, el IDataMappingStrategy solo se tendria que definir una funcion, y no dos. GOOD!!!!.
+
+NOTA: Lo malo de este enfoque es que a lo mejor el usuario quiere recorrer el resultset de otra manera. De todas formas, lo estandar es que el buscar todos se haga con este recorrido.
+
+De la misma manera, me he dado cuenta que la funcion formarSQLBuscarObjeto() no se usa nunca en GeneralDAO. Lo mejor es solamente tener la funcion buscar todos, y para el buscarPorLlave() agregarle la condicion de la llave a la consulta.
+
+NOTA: Una deficiencia de esto ultimo es que si, por ejemplo, se quiere que cuando se busque uno solo se creen todas las dependencias, pero cuando se buscan varios no, entonces no se puede hacer una distincion.
+
+-Una buena idea seria poder decir objDAO.salvar(objeto), en vez de tener que diferenciar entre insercion y modificacion.
+
+Esto se puede lograr con una Gateway, que defina el metodo salvar(Modelo objeto), y este metodo revise entonces si es una insercion o una modificacion. Para esto ultimo cada modelo puede tener una flag que indique que fue cargado de la BD, y la Gateway misma puede hacer esto. 
+
+Asi mas o menos seria la DAOGateway:
+
+public class DAOGateway extends GeneralDAO {
+	public Modelo buscar(Object key) {
+		Modelo obj = (Modelo) super.buscar(key);
+		obj.setLoadedFromDB();
+		return obj;		
+	}
+
+	public void salvar(Modelo objeto) {
+		if(objeto.isLoadedFromDB())
+			super.actualizar(objeto);
+		else
+			super.insertar(objeto);
+	}
+}
+
+-Hacer soporte para columnas dinamicas en TableMO (idea de Nolvis). En general lo que hay que hacer es un parser para la configuracion de las tablas: para poder realizar operaciones algebraicas, ejecutar funciones con parametros, etc. Estaba pensando que el parser que usaria TableMO para su configuracion se pudiera cambiar en cualquier momento (con el patron estrategia, por ejemplo). Asi podriamos definir parsers diferentes para distintas tablas, pudiendo configurar cada tabla de una manera distinta. 
+
+-Encapsular la conversion de la fila seleccionada visualmente a la fila real en el modelo dentro de TableMO. Arreglar en los comandos y hacerlo con este nuevo encapsulamiento. Actualmente esta conversion se hace en cada lugar que se necesita acceder por el indice de la fila al modelo de la tabla. Hay que hacer esto dentro del TableMO y pasarle entonces el indice de la vista.

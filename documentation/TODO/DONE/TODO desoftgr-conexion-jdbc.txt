@@ -1,0 +1,21 @@
+-A veces queremos construir un objeto a partir del resultado de una consulta a la BD. Por ejemplo, en GeneralDAO tenemos el metodo crearObjetoResultado(ResultSet rs). Pero a veces queremos crear este objeto a partir de diferentes consultas, que incluyen diferentes tablas y diferentes campos salidas. Si esto es asi, entonces no podemos usar el mismo metodo para crear al objeto.
+IDEA: en vez de usar un metodo especifico, usar un objeto estrategia que encapsule la forma de construir el objeto.
+Se podria poner en GeneralDAO un atributo que sea DataMappingStrategy estrategiaMapeo. El DAO debe tener una estrategia por defecto siempre, por lo cual debemos garantizar que se tenga desde el momento de la construccion. Para esto, el constructor de GeneralDAO debe recibir la estrategia inicial. DONE.
+
+-El metodo formarSQLBuscarObjeto() esta sobrando, ya que para buscar un objeto por llave, lo que estoy haciendo es adicionar una condicion al final de la consulta para buscar todos.
+Por otra parte, esto mismo se pudiera hacer para el eliminar...DONE.
+
+-Creo que el metodo createResultList() se puede eliminar, ya que este puede ser siempre de la forma 
+
+ArrayList lstLista = new ArrayList();
+while (rs.next()) {
+   Object obj = createResultObject(rs);
+   lstLista.add(obj);
+}
+return lstLista;
+
+Solo habria que definir el createResultObject(). El otro se puede dejar protected para que pueda ser sobreescrito.
+
+DONE. (En DefaultDataMappingStrategy lo implmente asi)
+
+-Me parece que con un metodo getInsertionMap(), que retorne un Map con el par campo-valor, se puede formar la consulta de insercion. Lo mismo para el actualizar. Para el eliminar no hay que especificar nada, pues se conoce la llave que es lo unico importante.DONE.

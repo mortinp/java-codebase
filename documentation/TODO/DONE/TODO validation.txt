@@ -1,0 +1,4 @@
+-Arreglar el siguiente problema: 
+Cuando se pierde el foco de un componente, y el input verifier se ejecuta y la validacion falla, el component se pone de color amarillo. Pero si de forma programatica cambiamos el valor del texto (ej. si abrimos el filtro por el boton y enviamos un modelo, y el texto del componente coge el valor del codigo de objeto recibido), el color amarillo deberia desaparecer, pero no lo hace porque el input verifier no ejecuta la valiadcion de nuevo, porque el componente no tenia el foco.
+
+DONE (lo resolvi poniendole un DocumentListener al componente cuando creo el input verifier).

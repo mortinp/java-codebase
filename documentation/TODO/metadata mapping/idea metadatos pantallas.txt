@@ -1,0 +1,38 @@
+Las pantallas se pudieran definir de la siguiente forma:
+
+<attr1 label="Attr1" validations="NotEmpty,NotThisValue('0.0')"/>
+<attr2 label="Attr2"/><attr3 label="Attr3"/>
+<attr4 label="Attr4"/><attr5 name="Attr5"/>
+
+<select ref="attr6" label="Choose Option">
+<Option value="Option1"/><Option value="Option2"/>
+</select>
+
+Esto haria que la pantalla se generara como mismo se refleja en la descripcion. Si aparecen dos elementos en la misma linea, quiere decir que los campos van uno al lado del otro en la pantalla.
+
+De aqui podemos sacar algunas anotaciones:
+
+-Cada elemento para captar un atributo se refleja como una tag, cuyo nombre es el nombre del atributo.
+
+-A cada elemento se le puede poner un 'label'.
+
+-El nombre del elemento (el que se muestra en los mensajes de validaciones, etc.) es el mismo que el del 'label', a no ser que se especifique la propiedad 'name'.
+
+-Se pueden especificar varias validaciones para un elemento. Estas se especifican en la propiedad 'validations', separadas por coma.
+
+-Las validaciones se pueden especificar sin parametros o con parametros. Los parametros que se especifican se usan en el constructor de la validacion, en el mismo orden en que aparecen. Si no se especifican parametros, entonces se construye el validador usando el constructor vacio. En caso de que un validador necesite obligatoriamente parametros para su construccion, estos deben ser proveidos, en el mismo orden en que se esperan en el constructor del validador.
+
+-Las validaciones se construyen usando el nombre proveido en la descripcion de la pantalla, y adicionando el sufijo 'Validator'
+
+-Los elementos que se usan para escoger el valor de cada atributo puede ser de varios tipos; el que se usa por defecto es un JTextField, pero se puede especificar tambien un combobox usando el elemento 'select' y especificando las opciones (elementos 'option').
+
+-En el caso en que se use 
+
+IDEAS:
+
+-Se puede hacer un parser de elementos, teniendo elementos predefinidos con sus propiedades. Si el elemento no se encuentra predefinido, entonces es un elemento de tipo 'field', cuyo 'ref' es el nombre del elemento que no existe. Esto quiere decir que para crear un elemento de tipo 'field' podemos hacer dos cosas:
+
+1) <field ref="attr1" label="Attr1">
+2) <attr1 label="Attr1">
+
+El caso 2) es simplemente una abreviatura del caso 1).

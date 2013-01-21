@@ -1,0 +1,3 @@
+-Hacer un cambio en la clase TableModelEditor: al metodo showModelData() deberia pasarsele el modelo a mostrar. Asi se le indica mejor al programador el modelo del cual debe mostrar los datos. Asimismo, se le puede poner un nombre mas preciso a la funcion, como showThisModelData(Model model). Lo mismo se puede hacer con el metodo buildModel(), o sea, se le puede pasar el modelo.
+
+COn respecto a esta misma idea, estaba pensando que a lo mejor el metodo buildModel() nos lo podemos ahorrar, tal vez usando Pico Container. Solamente sabiendo la clase del objeto a construir, y proveyendo un constructor con todos los parametros necesarios (good citizen), se pudiera extraer los datos de los campos de la interfaz visual (???).
