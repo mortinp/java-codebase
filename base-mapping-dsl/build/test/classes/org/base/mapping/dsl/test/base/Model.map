@@ -1,7 +1,0 @@
-org.base.mapping.dsl.test.base.Model -> tmodel {
-    attrString  : fieldString @key @noupdate
-    attrInt     : fieldInt @key @noupdate
-    attrFloat   : fieldFloat @noupdate
-    attrBoolean : fieldBoolean
-    attrDate    : fieldDate
-}
