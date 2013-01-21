@@ -8,7 +8,7 @@ package org.base.dao.filters;
  *
  * @author mproenza
  */
-public class FilterSimple extends FilterBase {
+public class FilterDateExtract extends FilterBase {
 
     public static String OP_EQUALS = " = ";
     public static String OP_NOT_EQUALS = " <> ";
@@ -18,27 +18,40 @@ public class FilterSimple extends FilterBase {
     public static String OP_LESS_THAN_EQUALS = " <= ";
     private String operator = OP_EQUALS;
     
-    private Object value;
+    public static String EXTRACT_YEAR = "'YEAR'";
+    public static String EXTRACT_MONTH = "'MONTH'";
+    public static String EXTRACT_DAY = "'DAY'";
+    private String extract = EXTRACT_YEAR;
 
-    public FilterSimple(String fieldName, Object value) {
+    
+    private Object value;
+    
+
+    public FilterDateExtract(String fieldName, Object value) {
         super(fieldName);
-        if(value == null) this.operator = " IS ";
+        //if(value == null) this.operator = " IS ";// Fix operator for null value
+        this.value = value;
+    }
+    
+    public FilterDateExtract(String fieldName, String extract, Object value) {
+        this(fieldName, value);
+        this.extract = extract;
+        //if(value == null) this.operator = " IS ";// Fix operator for null value
         this.value = value;
     }
 
-    public FilterSimple(String fieldName, Object value, String operator) {
-        this(fieldName, value);
-        // Fix operator for null value
-        if(value == null) {
+    public FilterDateExtract(String fieldName, String extract, Object value, String operator) {
+        this(fieldName, extract, value);
+        /*if(value == null) {// Fix operator for null value
             if(operator.equals(OP_EQUALS)) operator = " IS ";
             else if(operator.equals(OP_NOT_EQUALS)) operator = " IS NOT ";
-        }
+        }*/
         this.operator = " " + operator.trim() + " ";//make sure operator has trailing spaces...this fix is also good for testing
     }
 
     @Override
     public String getFilterExpression() {
         String strValue = formatValue(this.value);
-        return fieldName + this.operator + strValue;
+        return "EXTRACT(" + extract + ", " + fieldName + ")" + this.operator + strValue;
     }
 }

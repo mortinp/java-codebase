@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="0" hostname="proenza" name="org.base.dao.filters.composite.CompositeFiltersTest" tests="3" time="0.321" timestamp="2013-01-21T10:59:49">
+<testsuite errors="0" failures="0" hostname="proenza" name="org.base.dao.filters.composite.CompositeFiltersTest" tests="3" time="0.354" timestamp="2013-01-21T14:26:03">
   <properties>
     <property name="libs.jsp-compiler.javadoc" value="" />
     <property name="netbeans.autoupdate.country" value="US" />
@@ -437,9 +437,9 @@
     <property name="javadoc.nonavbar" value="false" />
     <property name="platform.active" value="default_platform" />
   </properties>
-  <testcase classname="org.base.dao.filters.composite.CompositeFiltersTest" name="testCompositeFiltersExpanded" time="0.009" />
-  <testcase classname="org.base.dao.filters.composite.CompositeFiltersTest" name="testCompositeFiltersCompact" time="0.005" />
-  <testcase classname="org.base.dao.filters.composite.CompositeFiltersTest" name="testCompositeFiltersVariedNoTypeSpec" time="0.011" />
+  <testcase classname="org.base.dao.filters.composite.CompositeFiltersTest" name="testCompositeFiltersExpanded" time="0.016" />
+  <testcase classname="org.base.dao.filters.composite.CompositeFiltersTest" name="testCompositeFiltersCompact" time="0.007" />
+  <testcase classname="org.base.dao.filters.composite.CompositeFiltersTest" name="testCompositeFiltersVariedNoTypeSpec" time="0.014" />
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

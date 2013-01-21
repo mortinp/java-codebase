@@ -13,6 +13,7 @@ import org.base.dao.datasources.context.IDataSourceContextInjectable;
 import org.base.dao.datasources.variations.VariationPostgresql;
 import org.base.dao.filters.FilterBase;
 import org.base.dao.filters.FilterBetween;
+import org.base.dao.filters.FilterDateExtract;
 import org.base.dao.filters.FilterMatchExistence;
 import org.base.dao.filters.IFilter;
 import org.base.dao.filters.FilterSimple;
@@ -31,7 +32,6 @@ public class FiltersTest extends TestCase {
         String sd1 = sdf.format(d1);
         String sd2 = sdf.format(d2);
         
-        //simple filter tests
         IFilter f1 = new FilterSimple("field", "value");
         assertEquals("field = 'value'", f1.getFilterExpression());
         
@@ -59,9 +59,11 @@ public class FiltersTest extends TestCase {
         IFilter f6 = new FilterSimple("field", null, FilterSimple.OP_NOT_EQUALS);
         assertEquals("field IS NOT NULL", f6.getFilterExpression());
         
-        //range filter tests
         IFilter f7 = new FilterBetween("field", d1, d2);
         assertEquals("field BETWEEN '" + sd1 + "' AND '" + sd2 + "'", f7.getFilterExpression());
+        
+        IFilter f8 = new FilterDateExtract("field", FilterDateExtract.EXTRACT_MONTH, 4);
+        assertEquals("EXTRACT('MONTH', field) = 4", f8.getFilterExpression());
     }
     
     public void testAdvancedFilters() {
