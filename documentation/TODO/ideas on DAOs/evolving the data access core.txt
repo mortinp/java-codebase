@@ -1,3 +1,0 @@
-Hablar aqui sobre la evolucion de la forma de acceso a datos durante los proyectos con el carnico. Hablar sobre como en cada proyecto surgieron necesidades que provocaron la evolucion de este servicio.
-
-Por ejemplo, en el proyecto 'Distribucion' surgieron dos necesidades: (1) se necesito que los conduces se generaran a partir de distintas consultas y mediante distintos algoritmos, lo cual llevo a la aparicion de las estrategias de mapeo; (2) se necesito definir diversas consultas de busqueda para los DAOs, lo cual se hizo definiendo varios metodos con los distintos servicios de busqueda; esto llevo a la aparicion de service locators (?).

@@ -1,8 +1,0 @@
--PicoContainer combinado con Decorators puede ser una buena via para configurar objetos complejos, teniendo en cuenta que pueden haber muchas combinaciones. Por ejemplo, en las busquedas en BDs, existen muchas combinaciones de busquedas, que se pueden resolver construyendo la consulta a partir de partes mas pequennas, que se envuelvan una con la otra y se formen consultas complejas.
-Si tenemos una consulta que busca todos los clientes, y otra que adiciona un filtro para buscar por departamento, entonces podriamos definir una forma de combinar la consulta con el filtro (ej. con decoradores).
-Ahora bien, el filtro por departamentos diria lago asi mas o menos:
-"id_departamento = ?"
-Lo que sucede con esto es que la llave foranea de departamento en la tabla de clientes.
-
--Sera factible seguir mejorando las abstracciones en los frameworks, librerias, etc???. Creo que las abstracciones se hacen para mejorar la productividad y acelerar el desarrollo de las aplicaciones. Lo que sucede es que la velocidad de pensamiento humano no es infinita, por lo que existe un umbral de velocidad en el desarrollo de SW. 
-Por ejemplo, toda funcionalidad de un SW debe tener sus especificaciones, por tanto estas especificaciones representan la cantidad minima de pensamiento que se debe poner en el desarrollo. Esta cantidad de esfuerzo mental, al ser el pensamiento finito en velocidad, tambien requiere una cantidad de tiempo. No hacemos nada con realizar frameworks que nos proporcionen una (supuesta) velocidad mayor a la cual podemos ir. Tendra esto algo que ver con la entropia en los SW (ver articulo de joel spolsky: talk at yale #1)???...
