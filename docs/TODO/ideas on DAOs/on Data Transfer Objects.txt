@@ -1,0 +1,12 @@
+Vi algo en un articulo (http://cgeers.com/2009/03/14/data-access-objects-with-the-entity-framework/) sobre la conversion de los objetos del dominio (los que tienen la logica del dominio) a objetos de transferencia de datos, que son los objetos que realmente se usan en la capa de acceso a datos. 
+
+Como yo lo entiendo es que, por ejemplo, tenemos una clase cliente que tiene varios campos que se usan para cumplir con la logica del dominio, pero sin embargo, no cumplen exactamente con la especificacion de la tabla correspondiente en la BD. Por ejemplo, el cliente puede tener un objeto departamento, pero la tabla de la BD solo requeria el id del departamento al que pertenece el cliente.
+De esta forma, el DAO de cliente debe mapear un objeto cliente de la forma:
+int id_departamento = cliente.getDepartamento().getId();
+Esto hace que los objetos DAO esten muy ligados a la estructura que definen los objetos del dominio. Si alguna vez cambia la estructura de la clase Cliente o su forma de almacenar los datos, entonces los DAOs pudieran fallar.
+
+Lo que se propone entonces es convertir cada objeto del dominio a un DTO, el cual es usado en la capa de acceso a datos. Asi, el DAO de cliente podria decir siempre:
+id_departamento = clienteDTO.getIdDepartamento();
+Para esto, lo conveniente seria declarar una interfaz ClienteDTO que declare exactamente lo que necesita el DAO. Cada objeto del dominio deberia poder convertirse a su DTO correspondiente.
+
+Lo que veo innecesario en este enfoque es el esfuerzo en convertir cada objeto del dominio en su correspondiente DAO. Este mismo esfuerzo se puede realizar cambiando a la misma vez la capa de dominio y la de acceso a datos.

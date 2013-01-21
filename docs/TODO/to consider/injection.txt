@@ -1,0 +1,19 @@
+Con las nuevas modificaciones al framework, es necesario realizar algunas configuraciones iniciales para crear los data source contexts (dsc). Estos dsc se acceden a traves de un registry, en el cual cada dsc tiene asociado un nombre. Varios objetos dentro del modulo de acceso a datos dependen de algun dsc especifico para realizar su tarea; por ejemplo, los DAOs tienen que usar un dsc para obtener las conexiones y para formar las consultas dependiendo de las especificaciones de cada base de DBMS; por otro lado, pueden haber filtros u otros objetos que necesiten un dsc, por ejemplo, el filtro FilterMatchExistence. Para poder hacer esto, cada objeto que use un dsc debe conocer el nombre del mismo, el cual se usa para obtener el dsc en el registry. Esto se logra actualmente pasando el nombre del dsc por el constructor de los objetos que lo necesitan, lo cual no es una solucion muy elegante.
+
+Esta es la razon por la cual estoy pensando que a lo mejor se puede usar algun container de dependency injection, con el cual se logre inyectar el dsc correcto a los objetos que lo necesiten. Para esto, el container debe ser lo sificientemente inteligente para saber en que contexto se esta creando un objeto, para inyectar el dsc. Por ejemplo, todos los filtros que usen un dsc, deben usar el mismo dsc que el DAO al cual se adicionan dichos filtros.
+
+
+
+//-------------------------------------------------------------
+
+Otra solucion que puedo adoptar en el caso en que un objeto B que necesita un dsc, esta contenido en un objeto A que necesita un dsc, y exista la restriccion de que el objeto B (hijo) deba usar el mismo dsc que el objeto A (padre), es implementando una interfaz para esto.
+
+Por ejemplo, los filtros que se adicionan a los DAOs, a veces usan un dsc (por ejemplo, el FilterMatchExistence). Lo que se puede hacer es crear una interfaz como la siguiente:
+
+public interface DataSourceContextInjectable {
+	public void setDataSourceContext(DataSourceContext dsc);
+}
+
+De esta forma, los filtros implementarian tambien esta interfaz, y el dao inyectaria su propio dsc a los filtros en cuanto los fuera a usar.
+
+Otra cosa importante de esta interfaz es que si en algun momento se decide inyectar el dsc mediante un dependecy injection container, se puede hacer a traves de esta misma interfaz.

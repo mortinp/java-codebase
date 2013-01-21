@@ -1,0 +1,34 @@
+-La conexion en GeneralDAO solo la necesitamos para crear el pstm. La conexion se obtiene ademas dependiendo del estado de la transaccion, o se recibe como un parametro en el metodo. En el libro de Martin Fowler vi algo interesante:
+
+PreparedStatement pstm = DB.prepare(insertStatement());
+
+Con esto, no hay necesidad de mencionar nada sobre la conexion. La preparacion del pstm esta encapsulada en la clase DB. Asi mismo, no habria que establecer ningun metodo al que se le pase la conexion, sino que DB se ocuparia de devolver la conexion apropiada. A su vez, DB encapsularia todo lo que tiene que ver con las transacciones: abrirla, cerrarla, ejecutarla, etc.
+
+En los transaction scripts, solo tendriamos que manejar la transaccion, y cualquier preparacion de pstms dentro de la transaccion, usarian la conexion que devuelve DB.
+
+Esta constituye una mejora mas que se puede narrar en Evolving a data access layer!!!...
+
+-En vez de pasar los parametros como un ArrayList, pasarlos como un Object ... params.
+
+-Seria bueno tener todo lo relacionado con un mismo servicio en un mismo lugar: la consulta, los parametros, y la forma de cargar el objeto a partir del resultado.
+En P of EAA vi algo como:
+
+public List findMany(StatementSource source) {
+      PreparedStatement stmt = null;
+      ResultSet rs = null;
+      try {
+         stmt = DB.prepare(source.sql());
+         for (int i = 0; i < source.parameters().length; i++)
+            stmt.setObject(i+1, source.parameters()[i]);
+         rs = stmt.executeQuery();
+         return loadAll(rs);
+      } catch (SQLException e) {
+         throw new ApplicationException(e);
+      } finally {
+         DB.cleanUp(stmt, rs);
+      }
+   } 
+
+Esta idea se puede extender tambien con la estrategia de construccion. Quedaria la sql, los parametros y la estrategia de mapeo dentro de una misma clase (SearchUtility)!!!. DONE (le puse a la interfaz IModuloBusqueda).
+
+NOTA: fijarme en el DB.cleanUp(stmt, rs). DB viene siendo la clase que se encarga de manejar los objetos de acceso a datos envueltos en una transaccion: conexiones, pstm, rs, etc.

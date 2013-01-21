@@ -1,0 +1,31 @@
+Como podemos formar un filtro de la siguiente manera???:
+
+select * from xxx where ((a or b) or ((c and d) or e)
+
+Me parece que se puede lograr con el patron composite. Este patron es precisamente para esto, para forma jerarquias complejas. La jerarquia de arriba se puede formar de la siguiente forma:
+
+
+a = condition("a");
+b = condition("b");
+c = condition("c");
+d = condition("d");
+e = condition("e");
+
+aORb = OR();
+aORb.add(a);
+aORb.add(b);
+
+cANDd = AND();
+cANDd.add(c);
+cANDd.add(d);
+
+eORXXX = OR();
+eORXXX.add(cANDd);
+eORXXX.add(e);
+
+full = OR();
+full.add(aORb);
+full.add(eORXXX);
+
+
+

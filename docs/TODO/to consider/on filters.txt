@@ -1,0 +1,7 @@
+Actualmente en la capa de acceso a datos tenemos un filtro de tipo FiltroSimple. A este filtro se le debe especificar el signo de comparacion, por ejemplo, de la forma:
+
+InterfaceFiltro f = new FiltroSimple("campo", "!=", valor);
+
+Este enfoque no es muy bueno, debido a que la clases que usen este filtro (las que lo crean) quedan muy acopladas al simbolo que se utiliza para cada comparacion: igualdad, desigualdad, rangos, etc. Sin embargo, para cada tipo de dato, o proveedor de BD (puede cambiar el lenguaje de consulta), la simbologia puede ser distinta, por lo que, si alguna vez cambiara el tipo de dato del campo "campo", o el proveedor de BD, entonces habria que cambiar todas las clases que usan FiltroSimple. Sin embargo, si tuvieramos un FiltroIgualdad, FiltroDesigualdad, FiltroRango, etc., entonces podriamos solamente cambiar el simbolo dentro de estas clases, y la conducta se cambia en todas partes tambien. 
+
+UPDATE (02-11-2012): de hecho, se puede tener un solo filtro, que cambia su conducta dependiendo del simbolo dado por el usuario y de los tipos de datos de los valores pasados. O sea, no hay que tener una clase FiltroRango para definir un filtro para rangos, sino que un mismo filtro puede cubrir igualdad, desigualdad, rangos, etc.

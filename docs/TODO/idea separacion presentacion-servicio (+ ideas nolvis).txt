@@ -1,0 +1,11 @@
+Estaba hablando con Nolvis, y me propuso la idea de separar por completo la capa de  presentacion de la de servicio.
+En el estado actual del framework, en la presentacion se especifican cosas de la dinamica de la interaccion de la aplicacion con el usuario, haciendo un uso intensivo del modelo de eventos de Swing, ligado al patron listener-comando-delegate.
+De esta forma, es necesario en la presentacion hacer referencia directa a algunas cosas que tienen que ver con el dominio de la aplicacion, y mas especificamente a la capa de servicio.
+Por ejemplo, necesitamos decir en la presentacion algo como: cuando se presione 'Enter' en este campo, entonces tenemos que invocar el comando FindModelByCodeField, para el objeto de tipo X.
+Lo que me proponia Nolvis era quitarle totalmente esta responsabilidad a la presentacion, y darsela mas bien a la capa de servicio.
+Para poder hacer esto, la capa de presentacion solo deberia informar la ocurrencia de un evento a alguna clase de servicio, con toda la informacion de dicho evento. La clase de servicio es la que debe analizar el evento que ocurrio y ejecutar la dinamica establecida para este evento. Esta dinamica es establecida en la misma capa de servicio.
+Esta idea tiene varias ventajas:
+-La dinamica de la interaccion con el usuario se puede probar facilmente, simulando y creando objetos de varios tipos de eventos y enviandoselos al objeto de servicio. No es necesaria la intervencion del usuario para esto!!!.
+-La presentacion solo se encargaria de delegar los eventos que ocurran en ella a otros objetos de servicio, lo que hace que las responsabilidades de cada capa queden mejor definidas y haya un mayor desacoplamiento.
+-Se pueden implementar clases de servicio de manera asincrona con las clases de la presentacion. O sea, la funcionalidad (y su dinamica) se pueden implementar y probar sin necesidad de que exista una interfaz de usuario funcional, y no es necesario esperar a definir una pantalla completa para poder implementar la funcionalidad (casi) completa.
+-No estamos ligados a un mdelo de eventos especifico de una tecnologia. Por ejemplo, no estamos ligados al modelo de eventos de Swing.
