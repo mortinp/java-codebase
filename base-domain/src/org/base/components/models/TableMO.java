@@ -4,7 +4,7 @@
  */
 package org.base.components.models;
 
-import org.base.componentes.modelos.parsing.ITableModelDataExtractor;
+import org.base.components.models.parsing.ITableModelDataExtractor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import org.base.componentes.modelos.util.TableRemoveRowUndoableEdit;
+import org.base.components.models.util.TableRemoveRowUndoableEdit;
 
 /**
  *

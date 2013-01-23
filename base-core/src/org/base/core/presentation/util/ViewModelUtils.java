@@ -14,8 +14,8 @@ import org.base.dao.DAOFactory;
 import org.base.dao.IDAO;
 import org.base.exceptions.system.SystemException;
 import org.base.dao.filters.IFilter;
-import org.base.componentes.models.ComboBoxMO;
-import org.base.componentes.models.TableMO;
+import org.base.components.models.ComboBoxMO;
+import org.base.components.models.TableMO;
 import org.base.components.models.parsing.DefaultTableModelDataExtractor;
 
 /**

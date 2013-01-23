@@ -8,7 +8,7 @@ import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.base.componentes.models.TableMO;
+import org.base.components.models.TableMO;
 import org.base.core.presentation.screens.ScreenBase;
 
 /**

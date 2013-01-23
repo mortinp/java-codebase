@@ -5,7 +5,7 @@
 package org.base.core.commands;
 
 import javax.swing.JTable;
-import org.base.componentes.models.TableMO;
+import org.base.components.models.TableMO;
 import org.base.core.presentation.screens.extensions.TableModelEditor;
 
 /**

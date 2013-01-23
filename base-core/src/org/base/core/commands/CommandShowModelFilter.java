@@ -7,7 +7,7 @@ package org.base.core.commands;
 import java.util.ArrayList;
 import java.util.List;
 import org.base.dao.filters.IFilter;
-import org.base.componentes.models.TableMO;
+import org.base.components.models.TableMO;
 import org.base.core.presentation.screens.extensions.FiltroModeloTabla;
 import org.base.core.presentation.util.ViewModelUtils;
 

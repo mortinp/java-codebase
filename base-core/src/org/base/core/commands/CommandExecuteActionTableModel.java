@@ -5,7 +5,7 @@
 package org.base.core.commands;
 
 import javax.swing.JTable;
-import org.base.componentes.modelos.extensions.TableMOActionDecorator;
+import org.base.components.models.extensions.TableMOActionDecorator;
 
 /**
  *

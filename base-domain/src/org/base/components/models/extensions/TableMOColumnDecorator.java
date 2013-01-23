@@ -4,7 +4,7 @@
  */
 package org.base.components.models.extensions;
 
-import org.base.componentes.modelos.TableMO;
+import org.base.components.models.TableMO;
 
 /**
  *

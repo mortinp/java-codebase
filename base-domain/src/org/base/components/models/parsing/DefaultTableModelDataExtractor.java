@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.base.componentes.modelos.formatting.IFormatter;
+import org.base.components.models.formatting.IFormatter;
 
 /**
  *

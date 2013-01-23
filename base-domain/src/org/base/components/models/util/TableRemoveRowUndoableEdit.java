@@ -5,7 +5,7 @@
 package org.base.components.models.util;
 
 import javax.swing.undo.AbstractUndoableEdit;
-import org.base.componentes.models.TableMO;
+import org.base.components.models.TableMO;
 
 /**
  *
