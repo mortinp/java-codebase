@@ -11,10 +11,10 @@ import org.base.dao.IDAO;
 import org.base.dao.DAOSimpleMetadataMapper;
 import org.base.dao.filters.IFilter;
 import org.base.components.models.base.AutonumericModel;
+import org.base.core.exceptions.ExceptionWrapAsRuntime;
 import org.base.dao.exceptions.DuplicateEntryException;
 import org.base.dao.exceptions.EntryNotFoundException;
 import org.base.dao.exceptions.ForeignKeyException;
-import org.base.exceptions.service.ExceptionWrapAsRuntime;
 
 /**
  *

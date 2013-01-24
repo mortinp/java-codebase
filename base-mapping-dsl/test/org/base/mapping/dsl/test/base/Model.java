@@ -29,7 +29,7 @@ public class Model {
         this.attrDate = attrDate;
     }
 
-    public Boolean isAttrBoolean() {
+    public boolean isAttrBoolean() {
         return attrBoolean;
     }
 
@@ -45,7 +45,7 @@ public class Model {
         this.attrDate = attrDate;
     }
 
-    public Float getAttrFloat() {
+    public float getAttrFloat() {
         return attrFloat;
     }
 
@@ -53,7 +53,7 @@ public class Model {
         this.attrFloat = attrFloat;
     }
 
-    public Integer getAttrInt() {
+    public int getAttrInt() {
         return attrInt;
     }
 
@@ -68,4 +68,5 @@ public class Model {
     public void setAttrString(String attrString) {
         this.attrString = attrString;
     }
+    
 }

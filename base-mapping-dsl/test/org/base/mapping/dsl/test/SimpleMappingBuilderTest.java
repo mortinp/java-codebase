@@ -119,9 +119,9 @@ public class SimpleMappingBuilderTest extends TestCase {
         
         Model model = (Model) mappingBuilder.buildObject(mapFieldsValues);
         assertEquals("StringValue", model.getAttrString());
-        assertEquals(new Integer(5), model.getAttrInt());
+        assertEquals(5, model.getAttrInt());
         assertEquals(1.3f, model.getAttrFloat());
-        assertEquals(Boolean.FALSE, model.isAttrBoolean());
+        assertEquals(false, model.isAttrBoolean());
         assertEquals(date, model.getAttrDate());
     }
     
