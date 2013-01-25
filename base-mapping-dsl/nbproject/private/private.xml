@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/media/Datos/pros/corev2-git/base-mapping-dsl/src/org/base/mapping/dsl/base/MappingDefinition.java</file>
+        <file>file:/media/Datos/pros/corev2-git/base-mapping-dsl/test/org/base/mapping/dsl/test/base/Model.map</file>
+        <file>file:/media/Datos/pros/corev2-git/base-mapping-dsl/test/org/base/mapping/dsl/test/SimpleMappingBuilderTest.java</file>
+    </open-files>
 </project-private>
