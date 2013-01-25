@@ -1,34 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/media/Datos/pros/corev2-git/base-core/test/org/base/core/tests/validators/ValidatorsTest.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/service/EntityManager.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/commands/CommandSendTableRow.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/delegates/ITableModelChangeReceiver.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/screens/extensions/FiltroModeloTabla.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/util/types/UtilFunciones.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/util/messages/MessageFactory.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/util/ViewUtils.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/util/ViewModelUtils.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/screens/extensions/DefaultTableModelEditor.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/screens/extensions/DefaultModelEditor.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/dao/ModelDAO.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/dao/AutonumericModelDAO.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/dao/AggregatedModelDAO.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/config/objects_handlers.properties</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/commands/CommandShowModelFilter.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/screens/extensions/SeleccionModeloFiltroTabla.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/screens/extensions/TableModelEditor.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/screens/extensions/AbstractModelEditor.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/commands/CommandDoStuffWithTableRow.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/commands/CommandExecuteActionTableModel.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/commands/CommandShowTableModelEditor.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/validation/binders/ListenerExecuteMultipleValidationOnAction.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/validation/binders/ListenerExecuteComponentValidationOnAction.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/validation/binders/ListenerExecuteValidationOnAction.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/validation/components/AbstractInputVerifier.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/validation/components/constraints/DocumentDecimalFieldLimit.java</file>
-        <file>file:/media/Datos/pros/corev2-git/base-core/src/org/base/core/presentation/validation/components/ValidatorMultipleInputVerifications.java</file>
-    </open-files>
 </project-private>
