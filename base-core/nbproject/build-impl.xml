@@ -578,15 +578,15 @@ is divided into following sections:
         </propertyfile>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.base-connection}" name="call.subproject"/>
-            <param location="${project.base-connection}/build.xml" name="call.script"/>
+            <param location="${project.base-components}" name="call.subproject"/>
+            <param location="${project.base-components}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.base-domain}" name="call.subproject"/>
-            <param location="${project.base-domain}/build.xml" name="call.script"/>
+            <param location="${project.base-connection}" name="call.subproject"/>
+            <param location="${project.base-connection}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
         </antcall>
@@ -1042,15 +1042,15 @@ is divided into following sections:
         </propertyfile>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.base-connection}" name="call.subproject"/>
-            <param location="${project.base-connection}/build.xml" name="call.script"/>
+            <param location="${project.base-components}" name="call.subproject"/>
+            <param location="${project.base-components}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.base-domain}" name="call.subproject"/>
-            <param location="${project.base-domain}/build.xml" name="call.script"/>
+            <param location="${project.base-connection}" name="call.subproject"/>
+            <param location="${project.base-connection}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
         </antcall>

@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.base.dao.datasources.context.DataSourceContext;
+import org.base.security.auth.config.AuthEntryPoint;
 
 /**
  * Clase de acceso a datos
@@ -28,7 +29,7 @@ import org.base.dao.datasources.context.DataSourceContext;
 public class DbServise {
 
     // <editor-fold defaultstate="collapsed" desc="DECLARACIÓN DE VARIABLES">
-    DataSourceContext dataSourceContext;
+    DataSourceContext dataSourceContext = AuthEntryPoint.dataSourceContext;
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">

@@ -4,9 +4,9 @@
  */
 package org.base.core.dao;
 
+import org.base.core.domain.Model;
 import org.base.dao.DAOBase;
 import org.base.dao.searches.IDataMappingStrategy;
-import org.base.components.models.base.Model;
 import org.base.exceptions.system.SystemException;
 
 /**

@@ -30,9 +30,9 @@ public class DAOSimpleMetadataMapper extends DAOBase {
     
     //public static String MAPPING_METADATA_FILES_DIRECTORY = "";
     
-    public DAOSimpleMetadataMapper(String metadataFileName, String dataSourceContextName) {
+    public DAOSimpleMetadataMapper(String metadataFilePath, String dataSourceContextName) {
         super(dataSourceContextName, null);
-        mappingBuilder = MappingBuilderLocator.getMappingBuilder(metadataFileName)
+        mappingBuilder = MappingBuilderLocator.getMappingBuilder(metadataFilePath)
                 /*new SimpleMappingBuilder(MAPPING_METADATA_FILES_DIRECTORY + "/" + metadataFileName)*/;
         setDataMappingStrategy(new DefaultDataMappingStrategy() {
             @Override
@@ -101,7 +101,7 @@ public class DAOSimpleMetadataMapper extends DAOBase {
                     separator = ",";
                 }
 
-                pstm = prepararSentencia(stmtData.getQuery(), stmtData.getParams(), conn);
+                pstm = prepareStatement(stmtData.getQuery(), stmtData.getParams(), conn);
                 ResultSet rs = pstm.executeQuery();
                 if (rs != null && rs.next()) {
                     SimpleMappingBuilder.fillObjectFromEntries(objModelo, autonumericEntries, rowToMap(rs));

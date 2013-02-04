@@ -4,7 +4,7 @@
  */
 package org.base.core.presentation.screens.extensions;
 
-import org.base.components.models.base.DomainFactory;
+import org.base.core.util.ObjectsFactory;
 import org.base.core.delegates.IModelReceiver;
 import org.base.core.exceptions.DomainException;
 import org.base.core.presentation.validation.IValidationStatusReceiver;
@@ -39,7 +39,7 @@ public abstract class DefaultModelEditor extends ModelEditor implements IValidat
     
     @Override
     protected void createNewModel() {
-        objModel = DomainFactory.getModelo(modelAlias);
+        objModel = ObjectsFactory.getObject(modelAlias);
     }
 
     @Override

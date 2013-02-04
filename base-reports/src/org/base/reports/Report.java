@@ -143,7 +143,7 @@ public class Report {
         return new Locale(defaultLanguage, defaultVariation);
     }
     
-    public void setProperties(Properties properties) {
+    public static void setProperties(Properties properties) {
         propertiesFile = properties;
         
         // Load data source context

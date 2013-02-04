@@ -25,6 +25,11 @@ public abstract class DAOAutonumeric extends DAOBase {
         super(dataSourceContextName, toObjectMapper);
     }
     
+    @Override
+    public String getKeyFields() {
+        return getNombreIdAutogenerado();
+    }
+    
     public int insertarObtenerId(Object objModelo) throws DuplicateEntryException {
         return insertarObtenerId(objModelo, getContextualConnection());            
     }
@@ -35,7 +40,7 @@ public abstract class DAOAutonumeric extends DAOBase {
 
         try {
             StatementData stmtData = createInsertionData(getInsertionMap(objModelo));
-            pstm = prepararSentencia(tryFixQuery(stmtData.getQuery()), stmtData.getParams(), conn);
+            pstm = prepareStatement(tryFixQuery(stmtData.getQuery()), stmtData.getParams(), conn);
             ResultSet rs = pstm.executeQuery();
             if (rs.next()) {
                 intId = Integer.parseInt(rs.getString(getNombreIdAutogenerado()));

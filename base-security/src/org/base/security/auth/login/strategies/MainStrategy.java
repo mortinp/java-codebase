@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 import org.base.dao.datasources.context.DataSourceContext;
+import org.base.security.auth.config.AuthEntryPoint;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.base.dao.datasources.context.DataSourceContext;
  */
 public class MainStrategy implements StrategyLogin {
     
-    DataSourceContext dataSourceContext;
+    DataSourceContext dataSourceContext = AuthEntryPoint.dataSourceContext;
     
     protected String getContextualDBObjectName(String objName) {
         return dataSourceContext.getDBObjectExpression(objName);

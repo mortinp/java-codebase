@@ -13,7 +13,7 @@ import javax.security.auth.login.Configuration;
  *
  * @author Luis Valdes Guerrero
  */
-public class SampleConf extends  Configuration{
+public class SampleConf extends Configuration {
 
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {

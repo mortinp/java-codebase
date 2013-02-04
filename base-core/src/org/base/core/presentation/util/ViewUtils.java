@@ -35,7 +35,7 @@ public class ViewUtils {
     }
     //yoel
     public static void arrangeTableColumns(JTable jTable,ArrayList lstLongitudes) {
-        DefaultTableModel modelo = (DefaultTableModel)jTable.getModel();
+        TableMO modelo = (TableMO)jTable.getModel();
         if (lstLongitudes != null) {
 
             jTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

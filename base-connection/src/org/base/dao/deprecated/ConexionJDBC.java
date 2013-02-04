@@ -14,7 +14,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 import javax.sql.DataSource;
-import org.apache.commons.beanutils.RowSetDynaClass;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.base.exceptions.system.SystemException;
 
@@ -159,7 +158,7 @@ public abstract class ConexionJDBC {
         close(conn);
     }
 
-    protected static List execute(Connection conn, String sql) throws SQLException {
+    /*protected static List execute(Connection conn, String sql) throws SQLException {
         PreparedStatement pstm = null;
         ResultSet rs = null;
         RowSetDynaClass rsdc = null;
@@ -169,7 +168,7 @@ public abstract class ConexionJDBC {
         rsdc = new RowSetDynaClass(rs);
 
         return rsdc.getRows();
-    }
+    }*/
     
     protected static ResultSet getResultSet(Connection conn, String sql) throws SQLException {
         PreparedStatement pstm = null;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.base.dao.filters.IFilter;
 import org.base.components.models.TableMO;
-import org.base.core.presentation.screens.extensions.FiltroModeloTabla;
+import org.base.core.presentation.screens.extensions.TableModelFilter;
 import org.base.core.presentation.util.ViewModelUtils;
 
 /**
@@ -22,23 +22,23 @@ public class CommandShowModelFilter implements ICommand {
     
     private int modoBusqueda = BUSCAR_AL_MOSTAR_FILTRO;//default
     
-    private FiltroModeloTabla filtroModeloTabla;
+    private TableModelFilter filtroModeloTabla;
     private String nombreModelo;
     
     //filtros (opcional)
     private List<IFilter> listaFiltros = new ArrayList<IFilter>();
     
-    public CommandShowModelFilter(String nombreModelo, FiltroModeloTabla filtroModeloTabla) {
+    public CommandShowModelFilter(String nombreModelo, TableModelFilter filtroModeloTabla) {
         this.filtroModeloTabla = filtroModeloTabla;
         this.nombreModelo = nombreModelo;
     }
     
-    public CommandShowModelFilter(String nombreModelo, FiltroModeloTabla filtroModeloTabla, List<IFilter> filtros) {
+    public CommandShowModelFilter(String nombreModelo, TableModelFilter filtroModeloTabla, List<IFilter> filtros) {
         this(nombreModelo, filtroModeloTabla);
         this.listaFiltros = filtros;
     }
     
-    public CommandShowModelFilter( String nombreModelo, FiltroModeloTabla filtroModeloTabla, int modoBusqueda) {
+    public CommandShowModelFilter( String nombreModelo, TableModelFilter filtroModeloTabla, int modoBusqueda) {
         this(nombreModelo, filtroModeloTabla);
         this.modoBusqueda = modoBusqueda;
         if(modoBusqueda == BUSCAR_AL_CREAR_COMANDO) {
@@ -46,7 +46,7 @@ public class CommandShowModelFilter implements ICommand {
         }         
     }
     
-    public CommandShowModelFilter(String nombreModelo, FiltroModeloTabla filtroModeloTabla, int modoBusqueda, List<IFilter> filtros) {
+    public CommandShowModelFilter(String nombreModelo, TableModelFilter filtroModeloTabla, int modoBusqueda, List<IFilter> filtros) {
         this(nombreModelo, filtroModeloTabla, filtros);
         this.modoBusqueda = modoBusqueda;
         if(modoBusqueda == BUSCAR_AL_CREAR_COMANDO) {
@@ -65,6 +65,6 @@ public class CommandShowModelFilter implements ICommand {
     
     private void llenarModeloTabla() {
         TableMO modeloNomenclador = ViewModelUtils.fillTableModel(nombreModelo, listaFiltros);
-        filtroModeloTabla.setModeloTabla(modeloNomenclador);
+        filtroModeloTabla.setTableModel(modeloNomenclador);
     }    
 }

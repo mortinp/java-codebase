@@ -55,9 +55,9 @@ public abstract class DAOFactory {
                 throw new SystemException("Could not create DAO for class " + strClassName);
             noCorrectConfigFound = false;
         } else {//try to create DAO from metadata
-            String metadataFileName = propertiesFile.getProperty(alias + "_mapping");
-            if (metadataFileName != null && !metadataFileName.isEmpty()) {
-                objDAO = new DAOSimpleMetadataMapper(metadataFileName, strContextName);
+            String metadataFilePath = propertiesFile.getProperty(alias + "_mapping");
+            if (metadataFilePath != null && !metadataFilePath.isEmpty()) {
+                objDAO = new DAOSimpleMetadataMapper(metadataFilePath, strContextName);
                 noCorrectConfigFound = false;
             }
         }

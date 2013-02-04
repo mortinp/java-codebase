@@ -2,11 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.base.security.auth.login.strategies;
+package org.base.security.auth.login;
 
 import org.base.security.auth.Rol;
 import org.base.security.auth.Usuario;
-import org.base.security.auth.exception.DSecurityException;
 import org.base.security.auth.login.strategies.StrategyLogin;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

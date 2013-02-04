@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import org.base.dao.datasources.connections.AbstractConnectionPool;
 import org.base.exceptions.system.SystemException;
-import org.base.dao.searches.deprecated.IDataSearchModule;
+import org.base.dao.searches.modules.IDataSearchModule;
 import org.base.dao.datasources.context.DataSourceContext;
 import org.base.dao.datasources.context.DataSourceContextRegistry;
 import org.base.dao.datasources.context.IDataSourceContextInjectable;
@@ -103,6 +103,10 @@ public abstract class DAOBase implements IDAO {
     
     protected String getContextualTableName() {
         return dataSourceContext.getDBObjectExpression(getTableName());
+    }
+    
+    protected String getContextualTableName(String tableName) {
+        return dataSourceContext.getDBObjectExpression(tableName);
     }
     
     protected String getContextualFunctionName(String fnName) {
@@ -193,8 +197,8 @@ public abstract class DAOBase implements IDAO {
         PreparedStatement pstm = null;
         try {
             StatementData stmtData = createInsertionData(getInsertionMap(objModelo));
-            pstm = prepararSentencia(stmtData.getQuery(), stmtData.getParams(), conn);
-            ejecutarSentencia(pstm, conn);
+            pstm = prepareStatement(stmtData.getQuery(), stmtData.getParams(), conn);
+            executeStatement(pstm, conn);
         } catch (ForeignKeyException ex) {
             throw new NonExistingReferenceException();
         }
@@ -236,8 +240,8 @@ public abstract class DAOBase implements IDAO {
         PreparedStatement pstm = null;       
         try {   
             StatementData stmtData = createUpdateData(getKeyValueExpression(objModelo), getUpdateMap(objModelo));
-            pstm = prepararSentencia(stmtData.getQuery(), stmtData.getParams(), conn);
-            int intRegistros = ejecutarSentencia(pstm, conn);
+            pstm = prepareStatement(stmtData.getQuery(), stmtData.getParams(), conn);
+            int intRegistros = executeStatement(pstm, conn);
             if (intRegistros == 0) {
                 throw new EntryNotFoundException();
             }
@@ -283,8 +287,8 @@ public abstract class DAOBase implements IDAO {
         String condicion = prepareConditionWithKey(getKeyValueExpression(objModelo));
         PreparedStatement pstm = null;
         try { 
-            pstm = prepararSentencia("DELETE FROM " + getContextualTableName() + " WHERE " + condicion, null, conn);
-            int nRegistries = ejecutarSentencia(pstm, conn);
+            pstm = prepareStatement("DELETE FROM " + getContextualTableName() + " WHERE " + condicion, null, conn);
+            int nRegistries = executeStatement(pstm, conn);
             if (nRegistries == 0) {
                 throw new EntryNotFoundException();
             }
@@ -319,7 +323,7 @@ public abstract class DAOBase implements IDAO {
     public List findAll() {
         Connection conn = getContextualConnection();        
         String sql = getFindAllStatement();
-        PreparedStatement pstm = prepararSentencia(buildSQLWithFilters(sql, filters, endingFilters), null, conn);
+        PreparedStatement pstm = prepareStatement(buildSQLWithFilters(sql, filters, endingFilters), null, conn);
         //pstm = conn.prepareStatement(formarSentenciaSQLConFiltros(sql), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         if(isSetTemporalMapper()) {
             List result = obtenerListaResultadoSentencia(pstm, conn, toObjectMapperTemporal);
@@ -357,7 +361,7 @@ public abstract class DAOBase implements IDAO {
             }
             sql += ")";
             
-            pstm = prepararSentencia(sql, listaParametros, conn);
+            pstm = prepareStatement(sql, listaParametros, conn);
             pstm.execute();
 
         } catch (Exception ex) {
@@ -376,7 +380,7 @@ public abstract class DAOBase implements IDAO {
         PreparedStatement pstm = null;
         Connection conn = getContextualConnection();
         try {
-            pstm = prepararSentencia(consulta, listaParametros, conn);
+            pstm = prepareStatement(consulta, listaParametros, conn);
             pstm.executeUpdate();
         } catch (Exception ex) {
             throw new SystemException(ex);
@@ -398,8 +402,8 @@ public abstract class DAOBase implements IDAO {
     // <editor-fold defaultstate="collapsed" desc="OTROS METODOS">   
     protected int ejecutarSentencia(String sql, Object[] parametros) throws DuplicateEntryException, ForeignKeyException {
         Connection conn = getContextualConnection();
-        PreparedStatement pstm = prepararSentencia(sql, parametros, conn);
-        return ejecutarSentencia(pstm, conn);            
+        PreparedStatement pstm = prepareStatement(sql, parametros, conn);
+        return executeStatement(pstm, conn);            
     }
     
     protected int[] ejecutarSentenciaBatch(String sql, List<Object[]> matrizParametros) throws DuplicateEntryException, ForeignKeyException {
@@ -431,7 +435,7 @@ public abstract class DAOBase implements IDAO {
      */
     protected Object obtenerObjetoResultadoSentencia(String sql, Object[] parametros, IDataMappingStrategy mapper) {
         Connection conn = getContextualConnection();
-        PreparedStatement pstm = prepararSentencia(sql, parametros, conn);
+        PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return obtenerObjetoResultadoSentencia(pstm, conn, mapper);            
     }
     
@@ -446,13 +450,13 @@ public abstract class DAOBase implements IDAO {
     
     protected List obtenerListaResultadoSentencia(String sql, Object[] parametros, IDataMappingStrategy mapper) {
         Connection conn = getContextualConnection();
-        PreparedStatement pstm = prepararSentencia(sql, parametros, conn);
+        PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return obtenerListaResultadoSentencia(pstm, conn, mapper);            
     }   
     // </editor-fold>  
     
     // <editor-fold defaultstate="collapsed" desc="METODOS ACCESO">
-    protected static PreparedStatement prepararSentencia(String sql, Object[] parametros, Connection conn) {
+    protected static PreparedStatement prepareStatement(String sql, Object[] parametros, Connection conn) {
         try {
             PreparedStatement pstm = conn.prepareStatement(sql);
             adicionarParametrosSentencia(pstm, parametros);            
@@ -487,7 +491,7 @@ public abstract class DAOBase implements IDAO {
         }
     }
     
-    private int ejecutarSentencia(PreparedStatement pstm, Connection conn) throws DuplicateEntryException, ForeignKeyException {
+    private int executeStatement(PreparedStatement pstm, Connection conn) throws DuplicateEntryException, ForeignKeyException {
         int filasAfectadas = 0;
         //boolean errorSistema = false;
         try {          

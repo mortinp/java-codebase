@@ -15,15 +15,15 @@ import org.base.mapping.dsl.base.parsing.SimpleMappingBuilder;
  */
 public class MappingBuilderLocator {
     
-    public static String MAPPING_METADATA_FILES_DIRECTORY = "";
+    //public static String MAPPING_METADATA_FILES_DIRECTORY = "";
     
     private static Map<String, IMappingBuilder> buildersMap = new HashMap<String, IMappingBuilder>();
     
-    public static IMappingBuilder getMappingBuilder(String metadataFileName) {
-        IMappingBuilder mappingBuilder = buildersMap.get(metadataFileName);
+    public static IMappingBuilder getMappingBuilder(String metadataFilePath) {
+        IMappingBuilder mappingBuilder = buildersMap.get(metadataFilePath);
         if(mappingBuilder == null) {
-            mappingBuilder = new SimpleMappingBuilder(MAPPING_METADATA_FILES_DIRECTORY + "/" + metadataFileName);
-            buildersMap.put(metadataFileName, mappingBuilder);
+            mappingBuilder = new SimpleMappingBuilder(/*MAPPING_METADATA_FILES_DIRECTORY + "/" +*/ metadataFilePath);
+            buildersMap.put(metadataFilePath, mappingBuilder);
         }
         
         return mappingBuilder;
