@@ -9,8 +9,8 @@ import java.util.List;
 import javax.swing.text.JTextComponent;
 import org.base.dao.filters.IFilter;
 import org.base.core.delegates.IModelReceiver;
-import org.base.core.service.EntityManager;
 import org.base.core.service.IEntityFinder;
+import org.base.core.service.RegistryEntityManager;
 
 
 /**
@@ -28,11 +28,11 @@ public class CommandFindModelByCodeField implements ICommand {
     private List<IFilter> lstFilters = new ArrayList<IFilter>();
     
     public CommandFindModelByCodeField(JTextComponent codeField,
-                                       String modelAlias, 
+                                       String entityAlias, 
                                        IModelReceiver receiver) {
         this.codeField = codeField;
         this.receiver = receiver;
-        this.nomencladorSE = new EntityManager(modelAlias);
+        this.nomencladorSE = RegistryEntityManager.getEntityManager(entityAlias);
     }
     
     public CommandFindModelByCodeField(JTextComponent codeField,

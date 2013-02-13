@@ -19,7 +19,7 @@ import org.base.exceptions.system.SystemException;
  */
 public abstract class DAOAutonumeric extends DAOBase {
     
-    protected abstract String getNombreIdAutogenerado();
+    protected abstract String getAutonumericFieldName();
     
     public DAOAutonumeric(String dataSourceContextName, IDataMappingStrategy toObjectMapper) {
         super(dataSourceContextName, toObjectMapper);
@@ -27,7 +27,7 @@ public abstract class DAOAutonumeric extends DAOBase {
     
     @Override
     public String getKeyFields() {
-        return getNombreIdAutogenerado();
+        return getAutonumericFieldName();
     }
     
     public int insertarObtenerId(Object objModelo) throws DuplicateEntryException {
@@ -43,7 +43,7 @@ public abstract class DAOAutonumeric extends DAOBase {
             pstm = prepareStatement(tryFixQuery(stmtData.getQuery()), stmtData.getParams(), conn);
             ResultSet rs = pstm.executeQuery();
             if (rs.next()) {
-                intId = Integer.parseInt(rs.getString(getNombreIdAutogenerado()));
+                intId = Integer.parseInt(rs.getString(getAutonumericFieldName()));
             }
             return intId;
         } catch (SQLException ex) {
@@ -69,7 +69,7 @@ public abstract class DAOAutonumeric extends DAOBase {
     
     private String tryFixQuery(String sql) {
         if(!sql.toLowerCase().contains("returning")) {
-            return sql + " RETURNING " + getNombreIdAutogenerado();
+            return sql + " RETURNING " + getAutonumericFieldName();
         }
         return sql;
     }

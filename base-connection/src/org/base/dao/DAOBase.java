@@ -17,7 +17,7 @@ import org.base.dao.datasources.connections.AbstractConnectionPool;
 import org.base.exceptions.system.SystemException;
 import org.base.dao.searches.modules.IDataSearchModule;
 import org.base.dao.datasources.context.DataSourceContext;
-import org.base.dao.datasources.context.DataSourceContextRegistry;
+import org.base.dao.datasources.context.RegistryDataSourceContext;
 import org.base.dao.datasources.context.IDataSourceContextInjectable;
 import org.base.dao.exceptions.DuplicateEntryException;
 import org.base.dao.exceptions.EntryNotFoundException;
@@ -84,7 +84,7 @@ public abstract class DAOBase implements IDAO {
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     public DAOBase(String dataSourceContextName, IDataMappingStrategy toObjectMapper) {
         super();
-        this.dataSourceContext = DataSourceContextRegistry.getDataSourceContext(dataSourceContextName);
+        this.dataSourceContext = RegistryDataSourceContext.getDataSourceContext(dataSourceContextName);
         // TODO: validate dataSourceContext against null value
         this.toObjectMapper = toObjectMapper;
         filters = new ArrayList<IFilter>();

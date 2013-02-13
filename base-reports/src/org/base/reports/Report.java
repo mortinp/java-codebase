@@ -23,7 +23,7 @@ import net.sf.jasperreports.engine.export.JExcelApiExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.swing.JRViewer;
 import org.base.dao.datasources.context.DataSourceContext;
-import org.base.dao.datasources.context.DataSourceContextRegistry;
+import org.base.dao.datasources.context.RegistryDataSourceContext;
 import org.base.exceptions.system.SystemException;
 
 /**
@@ -148,7 +148,7 @@ public class Report {
         
         // Load data source context
         String defaultDatasourceContext = propertiesFile.getProperty("reports.default.datasource.context");
-        dataSourceContext = DataSourceContextRegistry.getDataSourceContext(defaultDatasourceContext);
+        dataSourceContext = RegistryDataSourceContext.getDataSourceContext(defaultDatasourceContext);
     }
     
     private Connection getConnection() {

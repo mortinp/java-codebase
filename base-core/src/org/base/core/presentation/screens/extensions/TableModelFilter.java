@@ -33,8 +33,8 @@ public class TableModelFilter extends ScreenBase {
     }
     
     protected void initialize() {      
+        table.setModel(entityTableModel);
         tableModelRowSorter = new TableRowSorter<TableModel>(entityTableModel);
-        table.setModel(entityTableModel);  
         table.setRowSorter(tableModelRowSorter);
         table.updateUI();
     }

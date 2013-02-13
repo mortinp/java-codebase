@@ -18,7 +18,7 @@ public class TableModelFilterAndSelection extends TableModelFilter {
         this.objRecibidor = objRecibidor;  
     }
     
-    public void enviarModelo(int filaIndex) {
+    public void sendObject(int filaIndex) {
         Object objModelo = entityTableModel.getRowObjectAt(filaIndex);
         hide();
         initialize();

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.base.dao.filters.IFilter;
 import org.base.core.delegates.IMultipleModelsReceiver;
-import org.base.core.service.EntityManager;
 import org.base.core.service.IEntityFinder;
+import org.base.core.service.RegistryEntityManager;
 
 
 /**
@@ -23,9 +23,9 @@ public class CommandFindMultipleModels implements ICommand {
     //filtros
     private List<IFilter> lstFilters = new ArrayList<IFilter>();
     
-    public CommandFindMultipleModels(String modelAlias, IMultipleModelsReceiver receiver) {
+    public CommandFindMultipleModels(String entityAlias, IMultipleModelsReceiver receiver) {
         this.receiver = receiver;
-        this.nomencladorSE = new EntityManager(modelAlias);
+        this.nomencladorSE = RegistryEntityManager.getEntityManager(entityAlias);
     }
     
     public CommandFindMultipleModels(String modelAlias, 

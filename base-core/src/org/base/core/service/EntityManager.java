@@ -20,7 +20,7 @@ import org.base.dao.exceptions.ForeignKeyException;
  *
  * @author martin
  */
-public class EntityManager implements IEntityService, IEntityFinder {
+public class EntityManager implements IEntityManager {
 
     // <editor-fold defaultstate="collapsed" desc="DECLARACION DE VARIABLES">
     //Interface DAO

@@ -9,8 +9,8 @@ import java.util.List;
 import javax.swing.text.JTextComponent;
 import org.base.dao.filters.IFilter;
 import org.base.core.delegates.IModelReceiver;
-import org.base.core.service.EntityManager;
 import org.base.core.service.IEntityFinder;
+import org.base.core.service.RegistryEntityManager;
 import org.base.dao.filters.FilterSimple;
 
 /**
@@ -32,7 +32,7 @@ public class CommandFindFirstModelByCodeField implements ICommand {
     //servicio
     private IEntityFinder nomencladorSE;   
     
-    public CommandFindFirstModelByCodeField(String strNombreModelo, 
+    public CommandFindFirstModelByCodeField(String entityAlias, 
                                           JTextComponent objCampoCodigo,
                                           String nombreCampoCodigo,
                                           IModelReceiver objRecibidor) {        
@@ -40,7 +40,7 @@ public class CommandFindFirstModelByCodeField implements ICommand {
         this.nombreCampoCodigo = nombreCampoCodigo;
         this.objRecibidor = objRecibidor;        
 
-        this.nomencladorSE = new EntityManager(strNombreModelo);        
+        this.nomencladorSE = RegistryEntityManager.getEntityManager(entityAlias);        
     }
     
     public CommandFindFirstModelByCodeField(String strNombreModelo, 

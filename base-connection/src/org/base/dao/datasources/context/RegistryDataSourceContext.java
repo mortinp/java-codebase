@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author mproenza
  */
-public class DataSourceContextRegistry {
+public class RegistryDataSourceContext {
     private static Map<String, DataSourceContext> dsContextMap = new HashMap<String, DataSourceContext>();
     
     public static void addDataSourceContext(String dsCtxtName, DataSourceContext dsCtxt) {
