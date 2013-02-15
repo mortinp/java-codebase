@@ -12,9 +12,9 @@ import org.base.dao.IDAO;
 import org.base.dao.DAOSimpleMetadataMapper;
 import org.base.dao.filters.IFilter;
 import org.base.core.exceptions.ExceptionWrapAsRuntime;
-import org.base.dao.exceptions.DuplicateEntryException;
-import org.base.dao.exceptions.EntryNotFoundException;
-import org.base.dao.exceptions.ForeignKeyException;
+import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
+import org.base.dao.exceptions.ExceptionDBEntryNotFound;
+import org.base.dao.exceptions.ExceptionDBForeignKey;
 
 /**
  *
@@ -43,7 +43,7 @@ public class EntityManager implements IEntityManager {
             } else {
                 entityDAO.insert(objModelo);
             }
-        } catch (DuplicateEntryException ex) {
+        } catch (ExceptionDBDuplicateEntry ex) {
             throw new ExceptionWrapAsRuntime(ex);
         }
     }
@@ -52,9 +52,9 @@ public class EntityManager implements IEntityManager {
     public void update(Object objModelo) {
         try {
             entityDAO.update(objModelo);
-        } catch (ForeignKeyException ex) {
+        } catch (ExceptionDBForeignKey ex) {
             throw new ExceptionWrapAsRuntime(ex);
-        } catch (EntryNotFoundException ex) {
+        } catch (ExceptionDBEntryNotFound ex) {
             throw new ExceptionWrapAsRuntime(ex);
         }
     }
@@ -63,9 +63,9 @@ public class EntityManager implements IEntityManager {
     public void remove(Object objModelo) {
         try {
             entityDAO.remove(objModelo);
-        } catch (ForeignKeyException ex) {
+        } catch (ExceptionDBForeignKey ex) {
             throw new ExceptionWrapAsRuntime(ex);
-        } catch (EntryNotFoundException ex) {
+        } catch (ExceptionDBEntryNotFound ex) {
             throw new ExceptionWrapAsRuntime(ex);
         }
     }

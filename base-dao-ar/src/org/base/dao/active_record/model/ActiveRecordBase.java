@@ -7,9 +7,9 @@ package org.base.dao.active_record.model;
 import org.base.dao.DAOFactory;
 import org.base.dao.IDAO;
 import org.base.dao.active_record.exceptions.ActiveRecordException;
-import org.base.dao.exceptions.DuplicateEntryException;
-import org.base.dao.exceptions.EntryNotFoundException;
-import org.base.dao.exceptions.ForeignKeyException;
+import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
+import org.base.dao.exceptions.ExceptionDBEntryNotFound;
+import org.base.dao.exceptions.ExceptionDBForeignKey;
 
 /**
  *
@@ -50,11 +50,11 @@ public class ActiveRecordBase implements IActiveRecord {
                 dao.insert(this);
                 setRecorded(true);
             }
-        } catch (EntryNotFoundException ex) {
+        } catch (ExceptionDBEntryNotFound ex) {
             throw new ActiveRecordException(ex);
-        } catch (ForeignKeyException ex) {
+        } catch (ExceptionDBForeignKey ex) {
             throw new ActiveRecordException(ex);
-        } catch (DuplicateEntryException ex) {
+        } catch (ExceptionDBDuplicateEntry ex) {
             throw new ActiveRecordException(ex);
         }
     }
@@ -63,9 +63,9 @@ public class ActiveRecordBase implements IActiveRecord {
     public void delete() throws ActiveRecordException {
         try {
             dao.remove(this);
-        } catch (EntryNotFoundException ex) {
+        } catch (ExceptionDBEntryNotFound ex) {
             throw new ActiveRecordException(ex);
-        } catch (ForeignKeyException ex) {
+        } catch (ExceptionDBForeignKey ex) {
             throw new ActiveRecordException(ex);
         }
     }

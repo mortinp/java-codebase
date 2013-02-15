@@ -6,6 +6,7 @@ package org.base.dao.datasources.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.base.exceptions.system.SystemException;
 
 /**
  *
@@ -14,11 +15,13 @@ import java.util.Map;
 public class RegistryDataSourceContext {
     private static Map<String, DataSourceContext> dsContextMap = new HashMap<String, DataSourceContext>();
     
-    public static void addDataSourceContext(String dsCtxtName, DataSourceContext dsCtxt) {
+    public static void registerDataSourceContext(String dsCtxtName, DataSourceContext dsCtxt) {
         dsContextMap.put(dsCtxtName, dsCtxt);
     }
     
     public static DataSourceContext getDataSourceContext(String dsCtxtName) {
-        return dsContextMap.get(dsCtxtName);
+        DataSourceContext dsContext = dsContextMap.get(dsCtxtName);
+        if(dsContext == null) throw new SystemException("No Datasource Context configured as '" + dsCtxtName +  "'");
+        return dsContext;
     }
 }

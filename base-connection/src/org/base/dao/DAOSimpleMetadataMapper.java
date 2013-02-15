@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.base.dao.datasources.connections.AbstractConnectionPool;
-import org.base.dao.exceptions.DuplicateEntryException;
+import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
 import org.base.dao.searches.DefaultDataMappingStrategy;
 import org.base.exceptions.system.SystemException;
 import org.base.mapping.dsl.base.MappingEntry;
@@ -84,7 +84,7 @@ public class DAOSimpleMetadataMapper extends DAOBase {
     }
     
     @Override
-    public void insert(Object objModelo, Connection conn) throws DuplicateEntryException {
+    public void insert(Object objModelo, Connection conn) throws ExceptionDBDuplicateEntry {
         PreparedStatement pstm = null;
         try {
             //check if there are any fields modified as @autonumeric and alter the query in case there are.
@@ -112,7 +112,7 @@ public class DAOSimpleMetadataMapper extends DAOBase {
                 ex = (SQLException) ex.getCause();
             }
             if (ex.getSQLState().equals(AbstractConnectionPool.UNIQUE_VIOLATION)) {
-                throw new DuplicateEntryException();
+                throw new ExceptionDBDuplicateEntry();
             } else {
                 throw new SystemException(ex);
             }

@@ -19,10 +19,10 @@ import org.base.dao.searches.modules.IDataSearchModule;
 import org.base.dao.datasources.context.DataSourceContext;
 import org.base.dao.datasources.context.RegistryDataSourceContext;
 import org.base.dao.datasources.context.IDataSourceContextInjectable;
-import org.base.dao.exceptions.DuplicateEntryException;
-import org.base.dao.exceptions.EntryNotFoundException;
-import org.base.dao.exceptions.ForeignKeyException;
-import org.base.dao.exceptions.NonExistingReferenceException;
+import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
+import org.base.dao.exceptions.ExceptionDBEntryNotFound;
+import org.base.dao.exceptions.ExceptionDBForeignKey;
+import org.base.dao.exceptions.ExceptionDBNonExistingReference;
 import org.base.dao.filters.IFilter;
 
 /**
@@ -109,6 +109,10 @@ public abstract class DAOBase implements IDAO {
         return dataSourceContext.getDBObjectExpression(tableName);
     }
     
+    protected String getContextualObjectName(String objectName) {
+        return dataSourceContext.getDBObjectExpression(objectName);
+    }
+    
     protected String getContextualFunctionName(String fnName) {
         return dataSourceContext.getDBObjectExpression(fnName);
     }
@@ -169,7 +173,7 @@ public abstract class DAOBase implements IDAO {
     
     /**
      * Returns a map containing (field name, value) pairs. This map is used during the object update.
-     * Specify only the fields you want to update with their correponding values.
+     * Specify only the fields you want to update with their corresponding values.
      * @param obj The object from which to extract the values for the fields in the map.
      */
     protected abstract Map<String, Object> getUpdateMap(Object obj);
@@ -189,18 +193,18 @@ public abstract class DAOBase implements IDAO {
      * of abstract methods), or some other kind of mapping mechanism.
      */
     @Override
-    public void insert(Object objModelo) throws DuplicateEntryException {
+    public void insert(Object objModelo) throws ExceptionDBDuplicateEntry {
         insert(objModelo, getContextualConnection());
     }
     
-    protected void insert(Object objModelo, Connection conn) throws DuplicateEntryException {
+    protected void insert(Object objModelo, Connection conn) throws ExceptionDBDuplicateEntry {
         PreparedStatement pstm = null;
         try {
             StatementData stmtData = createInsertionData(getInsertionMap(objModelo));
             pstm = prepareStatement(stmtData.getQuery(), stmtData.getParams(), conn);
             executeStatement(pstm, conn);
-        } catch (ForeignKeyException ex) {
-            throw new NonExistingReferenceException();
+        } catch (ExceptionDBForeignKey ex) {
+            throw new ExceptionDBNonExistingReference();
         }
     }
     
@@ -211,7 +215,7 @@ public abstract class DAOBase implements IDAO {
      * the same batch, so this method is suitable for the repetitive insertion of multiple objects.
      */
     @Override
-    public void insert(List lstModelos) throws DuplicateEntryException {
+    public void insert(List lstModelos) throws ExceptionDBDuplicateEntry {
         try {
             List<Object[]> matrizParametros = new ArrayList<Object[]>(lstModelos.size());
             String query = null;
@@ -221,7 +225,7 @@ public abstract class DAOBase implements IDAO {
                 query = stmtData.getQuery();
             }
             ejecutarSentenciaBatch(query, matrizParametros);
-        } catch (ForeignKeyException ex) {
+        } catch (ExceptionDBForeignKey ex) {
             throw new SystemException(ex);
         }
     }
@@ -232,20 +236,20 @@ public abstract class DAOBase implements IDAO {
      * of abstract methods), or some other kind of mapping mechanism.
      */
     @Override
-    public void update(Object objModelo) throws EntryNotFoundException, ForeignKeyException {
+    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
         update(objModelo, getContextualConnection());                
     }
     
-    protected void update(Object objModelo, Connection conn) throws EntryNotFoundException, ForeignKeyException {
+    protected void update(Object objModelo, Connection conn) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
         PreparedStatement pstm = null;       
         try {   
             StatementData stmtData = createUpdateData(getKeyValueExpression(objModelo), getUpdateMap(objModelo));
             pstm = prepareStatement(stmtData.getQuery(), stmtData.getParams(), conn);
             int intRegistros = executeStatement(pstm, conn);
             if (intRegistros == 0) {
-                throw new EntryNotFoundException();
+                throw new ExceptionDBEntryNotFound();
             }
-        } catch (DuplicateEntryException ex) {
+        } catch (ExceptionDBDuplicateEntry ex) {
             throw new SystemException(ex);
         }
     }
@@ -257,7 +261,7 @@ public abstract class DAOBase implements IDAO {
      * the same batch, so this method is suitable for the repetitive update of multiple objects.
      */
     @Override
-    public void update(List lstModelos) throws EntryNotFoundException, ForeignKeyException {
+    public void update(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
         try {
             List<Object[]> matrizParametros = new ArrayList<Object[]>(lstModelos.size());
             String query = null;
@@ -267,7 +271,7 @@ public abstract class DAOBase implements IDAO {
                 query = stmtData.getQuery();
             }
             ejecutarSentenciaBatch(query, matrizParametros);
-        } catch (DuplicateEntryException ex) {
+        } catch (ExceptionDBDuplicateEntry ex) {
             throw new SystemException(ex);
         }
     }
@@ -278,38 +282,38 @@ public abstract class DAOBase implements IDAO {
      * of abstract methods), or some other kind of mapping mechanism.
      */
     @Override
-    public void remove(Object objModelo) throws EntryNotFoundException, ForeignKeyException {
+    public void remove(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
         remove(objModelo, getContextualConnection());
     }
     
     
-    protected void remove(Object objModelo, Connection conn) throws EntryNotFoundException, ForeignKeyException {
+    protected void remove(Object objModelo, Connection conn) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
         String condicion = prepareConditionWithKey(getKeyValueExpression(objModelo));
         PreparedStatement pstm = null;
         try { 
             pstm = prepareStatement("DELETE FROM " + getContextualTableName() + " WHERE " + condicion, null, conn);
             int nRegistries = executeStatement(pstm, conn);
             if (nRegistries == 0) {
-                throw new EntryNotFoundException();
+                throw new ExceptionDBEntryNotFound();
             }
-        } catch (DuplicateEntryException ex) {
+        } catch (ExceptionDBDuplicateEntry ex) {
             throw new SystemException(ex);
         } 
     }
     
     @Override
-    public void remove(List lstModelos) throws EntryNotFoundException, ForeignKeyException {
+    public void remove(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
     }
 
     @Override
     public Object findOne(Object valorLlave) {
         Connection conn = getContextualConnection();
         if(isSetTemporalMapper()) {
-            Object result = buscarPorNLlaves(valorLlave, conn, toObjectMapperTemporal);
+            Object result = findByKeys(valorLlave, conn, toObjectMapperTemporal);
             resetTemporalMapper();
             return result;
         }
-        return buscarPorNLlaves(valorLlave, conn, toObjectMapper);
+        return findByKeys(valorLlave, conn, toObjectMapper);
     }
     
     /**
@@ -322,7 +326,7 @@ public abstract class DAOBase implements IDAO {
     @Override
     public List findAll() {
         Connection conn = getContextualConnection();        
-        String sql = getFindAllStatement();
+        String sql = parseStatement(getFindAllStatement());
         PreparedStatement pstm = prepareStatement(buildSQLWithFilters(sql, filters, endingFilters), null, conn);
         //pstm = conn.prepareStatement(formarSentenciaSQLConFiltros(sql), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         if(isSetTemporalMapper()) {
@@ -394,19 +398,19 @@ public abstract class DAOBase implements IDAO {
         }
     }
     
-    public void deleteAllTableRows(IFilter ... filters) throws DuplicateEntryException, ForeignKeyException {
+    public void deleteAllTableRows(IFilter ... filters) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
         ejecutarSentencia(buildSQLWithFilters("DELETE FROM " + getContextualTableName(), Arrays.asList(filters), null), null);
     }
     // </editor-fold> 
   
     // <editor-fold defaultstate="collapsed" desc="OTROS METODOS">   
-    protected int ejecutarSentencia(String sql, Object[] parametros) throws DuplicateEntryException, ForeignKeyException {
+    protected int ejecutarSentencia(String sql, Object[] parametros) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return executeStatement(pstm, conn);            
     }
     
-    protected int[] ejecutarSentenciaBatch(String sql, List<Object[]> matrizParametros) throws DuplicateEntryException, ForeignKeyException {
+    protected int[] ejecutarSentenciaBatch(String sql, List<Object[]> matrizParametros) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepararSentenciaBatch(sql, matrizParametros, conn);
         return ejecutarSentenciaBatch(pstm, conn);
@@ -491,7 +495,7 @@ public abstract class DAOBase implements IDAO {
         }
     }
     
-    private int executeStatement(PreparedStatement pstm, Connection conn) throws DuplicateEntryException, ForeignKeyException {
+    private int executeStatement(PreparedStatement pstm, Connection conn) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
         int filasAfectadas = 0;
         //boolean errorSistema = false;
         try {          
@@ -502,9 +506,9 @@ public abstract class DAOBase implements IDAO {
                 ex = (SQLException) ex.getCause();
             }
             if (ex.getSQLState().equals(AbstractConnectionPool.UNIQUE_VIOLATION)) {
-                throw new DuplicateEntryException();
+                throw new ExceptionDBDuplicateEntry();
             } else if(ex.getSQLState().equals(AbstractConnectionPool.FOREIGN_KEY_VIOLATION)) {
-                throw new ForeignKeyException();
+                throw new ExceptionDBForeignKey();
             } else {
                 //errorSistema = true;
                 throw new SystemException(ex);
@@ -522,7 +526,7 @@ public abstract class DAOBase implements IDAO {
         }
     }
     
-    private int[] ejecutarSentenciaBatch(PreparedStatement pstm, Connection conn) throws DuplicateEntryException, ForeignKeyException {
+    private int[] ejecutarSentenciaBatch(PreparedStatement pstm, Connection conn) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
         int filasAfectadas [] = {};
         //boolean errorSistema = false;
         try {          
@@ -533,9 +537,9 @@ public abstract class DAOBase implements IDAO {
                 ex = (SQLException) ex.getCause();
             }
             if (ex.getSQLState().equals(AbstractConnectionPool.UNIQUE_VIOLATION)) {
-                throw new DuplicateEntryException();
+                throw new ExceptionDBDuplicateEntry();
             } else if(ex.getSQLState().equals(AbstractConnectionPool.FOREIGN_KEY_VIOLATION)) {
-                throw new ForeignKeyException();
+                throw new ExceptionDBForeignKey();
             } else {
                 //errorSistema = true;
                 throw new SystemException(ex);
@@ -593,12 +597,13 @@ public abstract class DAOBase implements IDAO {
         }
     }
     
-    private Object buscarPorNLlaves(Object objLlave, Connection conn, IDataMappingStrategy mapper) {
+    private Object findByKeys(Object objLlave, Connection conn, IDataMappingStrategy mapper) {
         String conditionKeys = prepareConditionWithKey(objLlave);
 
         PreparedStatement pstm = null;
-        try {            
-            pstm = conn.prepareStatement(buildSQLWithFilters(buildSQLWithCondition(getFindAllStatement(), conditionKeys), filters, endingFilters));
+        try {  
+            String sql = parseStatement(getFindAllStatement());
+            pstm = conn.prepareStatement(buildSQLWithFilters(buildSQLWithCondition(sql, conditionKeys), filters, endingFilters));
             return obtenerObjetoResultadoSentencia(pstm, conn, mapper);
         } catch (Exception unknown) {
             throw new SystemException(unknown);
@@ -743,6 +748,25 @@ public abstract class DAOBase implements IDAO {
         }        
 
         return sql;
+    }
+    
+    public String parseStatement(String stmt) {
+        // Make some hacks
+        stmt = stmt.replaceAll("=", " = ");
+        stmt = stmt.replaceAll(",", " , ");
+        
+        int fromIndex = 0;
+        while(stmt.indexOf(":", fromIndex) != -1) {
+            int index1 = stmt.indexOf(":", fromIndex);
+            int index2 = stmt.indexOf(" ", index1 + 1);
+            String objectName = stmt.substring(index1 + 1, index2==-1?stmt.length() -1:index2);
+            
+            stmt = stmt.replaceAll(":" + objectName, getContextualObjectName(objectName));
+            
+            fromIndex = index2 + 1;
+        }
+        
+        return stmt;
     }
     
     /*private static void addParameterToStatement(PreparedStatement pstm, int parameterIndex, Object param) throws SQLException {

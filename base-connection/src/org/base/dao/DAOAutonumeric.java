@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.base.dao.datasources.connections.AbstractConnectionPool;
-import org.base.dao.exceptions.DuplicateEntryException;
+import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
 import org.base.exceptions.system.SystemException;
 
 /**
@@ -30,11 +30,11 @@ public abstract class DAOAutonumeric extends DAOBase {
         return getAutonumericFieldName();
     }
     
-    public int insertarObtenerId(Object objModelo) throws DuplicateEntryException {
+    public int insertarObtenerId(Object objModelo) throws ExceptionDBDuplicateEntry {
         return insertarObtenerId(objModelo, getContextualConnection());            
     }
     
-    public int insertarObtenerId(Object objModelo, Connection conn) throws DuplicateEntryException {
+    public int insertarObtenerId(Object objModelo, Connection conn) throws ExceptionDBDuplicateEntry {
         int intId = 0;
         PreparedStatement pstm = null;
 
@@ -51,7 +51,7 @@ public abstract class DAOAutonumeric extends DAOBase {
                 ex = (SQLException) ex.getCause();
             }
             if (ex.getSQLState().equals(AbstractConnectionPool.UNIQUE_VIOLATION)) {
-                throw new DuplicateEntryException();
+                throw new ExceptionDBDuplicateEntry();
             } else {
                 throw new SystemException(ex);
             }
