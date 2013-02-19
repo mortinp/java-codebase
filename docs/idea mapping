@@ -1,0 +1,7 @@
+{
+    id: id @key @autonumeric @orderby
+    description: description
+    client as {id, description}: id_client as {id, description}
+}
+
+***En el objeto que se le pasa al 'as', el primer campo siempre debe ser la llave

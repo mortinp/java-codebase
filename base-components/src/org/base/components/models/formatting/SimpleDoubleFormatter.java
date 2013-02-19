@@ -25,6 +25,6 @@ public class SimpleDoubleFormatter implements IFormatter {
 
     @Override
     public Object format(Object obj) {
-        return formatter.format((Double)obj);
+        return Double.parseDouble(formatter.format((Double)obj));
     }
 }

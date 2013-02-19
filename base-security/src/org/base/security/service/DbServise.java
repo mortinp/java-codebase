@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.base.dao.datasources.context.DataSourceContext;
 import org.base.security.auth.config.AuthEntryPoint;
+import org.base.security.config.Values;
 
 /**
  * Clase de acceso a datos
@@ -123,7 +124,7 @@ public class DbServise {
         Connection conn = null;
         try {
             String stm = "SELECT usuario.login"
-                    + " FROM " + getContextualDBObjectName("usuario");
+                    + " FROM " + getContextualDBObjectName(Values.TABLE_NAME_USER);
 
             conn = dataSourceContext.getConnection();
             Statement select = conn.createStatement();
@@ -143,7 +144,7 @@ public class DbServise {
         Connection conn = null;
         try {
             String stm = "SELECT activo"
-                    + " FROM " + getContextualDBObjectName("usuario") + " where login='" + usuario + "'";
+                    + " FROM " + getContextualDBObjectName(Values.TABLE_NAME_USER) + " where login='" + usuario + "'";
 
             conn = dataSourceContext.getConnection();
             Statement select = conn.createStatement();
@@ -210,7 +211,7 @@ public class DbServise {
         Connection conn = null;
         try {
             String stm1 = "SELECT usuario.login as login"
-                    + " FROM " + getContextualDBObjectName("usuario");
+                    + " FROM " + getContextualDBObjectName(Values.TABLE_NAME_USER);
             String stm2 = "SELECT usuario_rol.id_usuario as login"
                     + " FROM " + getContextualDBObjectName("usuario_rol")
                     + " WHERE usuario_rol.id_rol = '"
@@ -339,7 +340,7 @@ public class DbServise {
             throw new DSecurityException("El usuario debe estar compuesto de letras minusculas y no tener espacios");
         }
         try {
-            String stm = "insert into " + getContextualDBObjectName("usuario") + "(login, nombre, password, activo, login_fallidos,dias_caducar)"
+            String stm = "insert into " + getContextualDBObjectName(Values.TABLE_NAME_USER) + "(login, nombre, password, activo, login_fallidos,dias_caducar)"
                     + "values('" + usuario + "','"+nombre+"','" + pass + "',true, 0,90)";
 
             conn = dataSourceContext.getConnection();
@@ -430,7 +431,7 @@ public class DbServise {
     public boolean passwordCaducada(String usuario) {
         Connection conn = null;
         try {
-            String stm = "select password_actualizada, dias_caducar from " + getContextualDBObjectName("usuario")
+            String stm = "select password_actualizada, dias_caducar from " + getContextualDBObjectName(Values.TABLE_NAME_USER)
                     + " where login='" + usuario + "'";
 
             conn = dataSourceContext.getConnection();
@@ -584,7 +585,7 @@ public class DbServise {
     public String nombreUsuario(String usuario){
              Connection conn = null;
         try {
-            String stm = "select nombre from " + getContextualDBObjectName("usuario")
+            String stm = "select nombre from " + getContextualDBObjectName(Values.TABLE_NAME_USER)
                     + " where login='" + usuario + "'";
 
             conn = dataSourceContext.getConnection();

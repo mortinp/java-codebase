@@ -32,3 +32,6 @@ public class FilmsServices {
 	}
 
 }
+
+UPDATE (17-02-2013): Esto se puede lograr si se conoce el nombre del campo en la tabla 'films', que referencia a los actores o a los directores (tambien hay que tener en cuenta la multiplicidad de cada campo: onteToMany, OneToOne, etc.). Si supieramos esto, entonces se puede crear un filtro que iguale dicho campo, con el campo de la tabla 'actors' o 'directors', y esto se puede conocer con los DAOs de 'actors' y 'directors'.
+

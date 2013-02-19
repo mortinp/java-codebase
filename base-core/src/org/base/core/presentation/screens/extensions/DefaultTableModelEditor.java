@@ -7,6 +7,7 @@ package org.base.core.presentation.screens.extensions;
 import org.base.core.delegates.ITableModelChangeReceiver;
 import org.base.core.util.ObjectsFactory;
 import org.base.core.exceptions.DomainException;
+import org.base.core.exceptions.ExceptionWrapAsRuntime;
 import org.base.core.presentation.validation.IValidationStatusReceiver;
 
 /**
@@ -66,6 +67,9 @@ public abstract class DefaultTableModelEditor extends TableModelEditor implement
                 sendToReceiver(objModel);
                 if(closeOnAccept) close();
             } catch (DomainException ex) {
+                rollback();
+                showWarningMessage(ex.getMessage());
+            } catch (ExceptionWrapAsRuntime ex) {
                 rollback();
                 showWarningMessage(ex.getMessage());
             }

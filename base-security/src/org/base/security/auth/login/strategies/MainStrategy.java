@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 import org.base.dao.datasources.context.DataSourceContext;
 import org.base.security.auth.config.AuthEntryPoint;
+import org.base.security.config.Values;
 
 /**
  *
@@ -44,7 +45,7 @@ public class MainStrategy implements StrategyLogin {
         String pass;
         try {
             conn = dataSourceContext.getConnection();
-            String stm = "select password  from " + getContextualDBObjectName("usuario") + " where login=" + "'" + user + "'";
+            String stm = "select password  from " + getContextualDBObjectName(Values.TABLE_NAME_USER) + " where login=" + "'" + user + "'";
             Statement select = conn.createStatement();
             ResultSet result = select.executeQuery(stm);
             if (!result.next()) {
@@ -52,7 +53,7 @@ public class MainStrategy implements StrategyLogin {
             }
             pass = result.getString(1);
 
-            stm = "select login_fallidos, activo  from " + getContextualDBObjectName("usuario") + " where login=" + "'" + user + "'";
+            stm = "select login_fallidos, activo  from " + getContextualDBObjectName(Values.TABLE_NAME_USER) + " where login=" + "'" + user + "'";
             select = conn.createStatement();
             result = select.executeQuery(stm);
             result.next();
@@ -60,7 +61,7 @@ public class MainStrategy implements StrategyLogin {
             boolean activo = result.getBoolean(2);
             if(!activo) throw new LoginException("Usuario bloqueado");
             if (password.equals(pass)) {
-                stm = "update " + getContextualDBObjectName("usuario") + " set login_fallidos=? where login=" + "'" + user + "'";
+                stm = "update " + getContextualDBObjectName(Values.TABLE_NAME_USER) + " set login_fallidos=? where login=" + "'" + user + "'";
                 PreparedStatement pstm = conn.prepareStatement(stm);
                 pstm.setInt(1, 0);
                 pstm.executeUpdate();
@@ -69,11 +70,11 @@ public class MainStrategy implements StrategyLogin {
                 login_fallidos += 1;
                 PreparedStatement pstm = null;
                 if (login_fallidos < 3) {
-                    stm = "update " + getContextualDBObjectName("usuario") + " set login_fallidos=? where login=" + "'" + user + "'";
+                    stm = "update " + getContextualDBObjectName(Values.TABLE_NAME_USER) + " set login_fallidos=? where login=" + "'" + user + "'";
                     pstm = conn.prepareStatement(stm);
                     pstm.setInt(1, login_fallidos);
                 } else {
-                    stm = "update " + getContextualDBObjectName("usuario") + " set activo=? where login=" + "'" + user + "'";
+                    stm = "update " + getContextualDBObjectName(Values.TABLE_NAME_USER) + " set activo=? where login=" + "'" + user + "'";
                     pstm = conn.prepareStatement(stm);
                     pstm.setBoolean(1, false);
                 }
@@ -102,7 +103,7 @@ public class MainStrategy implements StrategyLogin {
         Connection conn = null;
         List<String> list = new ArrayList<String>();
         try {
-            String stm = "select \"rol\".nombre from " + getContextualDBObjectName("rol") + "," + getContextualDBObjectName("usuario") + "," + getContextualDBObjectName("usuario_rol") + " where \"rol\".nombre = usuario_rol.\"id_rol\" AND   \"usuario\".login = usuario_rol.\"id_usuario\" and \"usuario\".login ='" + nombre + "'";
+            String stm = "select " + Values.TABLE_NAME_ROL + ".nombre from " + getContextualDBObjectName(Values.TABLE_NAME_ROL) + "," + getContextualDBObjectName(Values.TABLE_NAME_USER) + "," + getContextualDBObjectName(Values.TABLE_NAME_USER_ROL) + " where " + Values.TABLE_NAME_ROL + ".nombre = " + Values.TABLE_NAME_USER_ROL + ".id_rol AND " + Values.TABLE_NAME_USER + ".login = " + Values.TABLE_NAME_USER_ROL + ".id_usuario and " + Values.TABLE_NAME_USER + ".login ='" + nombre + "'";
             conn = dataSourceContext.getConnection();
             Statement select = conn.createStatement();
             ResultSet result = select.executeQuery(stm);

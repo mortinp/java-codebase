@@ -11,7 +11,8 @@ import org.base.dao.filters.IFilter;
  *
  * @author Martin
  */
-public interface IFilteredDAO {
+public interface IFilteredDAO extends IDAO {
+    
     public void setFilters(IFilter ... filtros);
     
     public void setFilters(List<IFilter> filtros);

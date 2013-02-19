@@ -405,18 +405,21 @@ public abstract class DAOBase implements IDAO {
   
     // <editor-fold defaultstate="collapsed" desc="OTROS METODOS">   
     protected int ejecutarSentencia(String sql, Object[] parametros) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
+        sql = parseStatement(sql);
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return executeStatement(pstm, conn);            
     }
     
     protected int[] ejecutarSentenciaBatch(String sql, List<Object[]> matrizParametros) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
+        sql = parseStatement(sql);
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepararSentenciaBatch(sql, matrizParametros, conn);
         return ejecutarSentenciaBatch(pstm, conn);
     }
     
     protected Object obtenerObjetoResultadoSentencia(String sql, Object[] parametros) {
+        sql = parseStatement(sql);
         if(isSetTemporalMapper()) {
             Object result = obtenerObjetoResultadoSentencia(sql, parametros, toObjectMapperTemporal);
             resetTemporalMapper();
@@ -438,12 +441,14 @@ public abstract class DAOBase implements IDAO {
      * BEWARE: A null object could be returned if the result set is empty (I've seen it in practice!!!), so use it wisely.
      */
     protected Object obtenerObjetoResultadoSentencia(String sql, Object[] parametros, IDataMappingStrategy mapper) {
+        sql = parseStatement(sql);
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return obtenerObjetoResultadoSentencia(pstm, conn, mapper);            
     }
     
     protected List obtenerListaResultadoSentencia(String sql, Object[] parametros) {
+        sql = parseStatement(sql);
         if(isSetTemporalMapper()) {
             List result = obtenerListaResultadoSentencia(sql, parametros, toObjectMapperTemporal);
             resetTemporalMapper();
@@ -453,6 +458,7 @@ public abstract class DAOBase implements IDAO {
     }
     
     protected List obtenerListaResultadoSentencia(String sql, Object[] parametros, IDataMappingStrategy mapper) {
+        sql = parseStatement(sql);
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return obtenerListaResultadoSentencia(pstm, conn, mapper);            

@@ -36,3 +36,5 @@ IDEAS:
 2) <attr1 label="Attr1">
 
 El caso 2) es simplemente una abreviatura del caso 1).
+
+UPDATE (17-02-2013): Se podra crear un DSL con Groovy (u otro lenguaje que corra en la JVM) para especificar las pantallas, de tal forma que se compile la definicion y el mismo compilador del lenguaje genere las pantallas???.
