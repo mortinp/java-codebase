@@ -52,9 +52,12 @@ public class EntityManager implements IEntityManager {
     public void update(Object objModelo) {
         try {
             entityDAO.update(objModelo);
+            
         } catch (ExceptionDBForeignKey ex) {
             throw new ExceptionWrapAsRuntime(ex);
         } catch (ExceptionDBEntryNotFound ex) {
+            throw new ExceptionWrapAsRuntime(ex);
+        }  catch (ExceptionDBDuplicateEntry ex) {
             throw new ExceptionWrapAsRuntime(ex);
         }
     }

@@ -162,6 +162,8 @@ public class SimpleMappingBuilder implements IMappingBuilder {
                         method = obj.getClass().getMethod(setAccessorName, Long.TYPE);
                     } else if(parameterClass == Double.class) {
                         method = obj.getClass().getMethod(setAccessorName, Double.TYPE);
+                    } else if(parameterClass == java.sql.Date.class) {
+                        method = obj.getClass().getMethod(setAccessorName, java.util.Date.class);
                     }
                 } catch (NoSuchMethodException ex1) {
                     Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex1);

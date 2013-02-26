@@ -16,7 +16,7 @@ public interface IDAO {
     
     public void insert(List lstModelos) throws ExceptionDBDuplicateEntry;
 
-    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey;
+    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey, ExceptionDBDuplicateEntry;
     
     public void update(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey;
 

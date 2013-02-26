@@ -2,3 +2,4 @@ sales-*/
 skeleton/
 *.backup
 *.zip
+*.sql

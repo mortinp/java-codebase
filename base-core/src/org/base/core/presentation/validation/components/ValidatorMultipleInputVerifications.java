@@ -10,7 +10,6 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 import org.base.core.presentation.validation.IValidator;
-import org.base.core.presentation.validation.components.AbstractInputVerifier;
 import org.base.exceptions.system.SystemException;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.containers.TransientPicoContainer;

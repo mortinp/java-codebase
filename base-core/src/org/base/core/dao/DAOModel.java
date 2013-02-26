@@ -13,9 +13,9 @@ import org.base.exceptions.system.SystemException;
  *
  * @author mproenza
  */
-public abstract class ModelDAO extends DAOBase {
+public abstract class DAOModel extends DAOBase {
     
-    public ModelDAO(String dataSourceContextName, IDataMappingStrategy mappingStrategy) {
+    public DAOModel(String dataSourceContextName, IDataMappingStrategy mappingStrategy) {
         super(dataSourceContextName, mappingStrategy);
     }
     

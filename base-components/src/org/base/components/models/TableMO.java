@@ -43,7 +43,7 @@ public class TableMO extends AbstractTableModel {
     // <editor-fold defaultstate="collapsed" desc="STRUCTURAL MODEL">
     ArrayList colNames = null;
     ArrayList colWidths = null; //longitudes de las columnas
-    ArrayList colEditables = null;  //columnas editables
+    List colEditables = null;  //columnas editables
     
     int pageOffset;
     int pageSize;
@@ -67,7 +67,7 @@ public class TableMO extends AbstractTableModel {
     public TableMO() {
         super();
         this.colEditables = new ArrayList();
-        this.pageSize = 100000;
+        this.pageSize = 1000000;
     }
     
     public TableMO(List colNames, List colWidths, ITableModelDataExtractor dataConfigParser) {
@@ -173,12 +173,18 @@ public class TableMO extends AbstractTableModel {
         return getCellRenderer(row, column);
     }
 
-    public ArrayList getEditableColumns() {
+    public List getEditableColumns() {
         return colEditables;
     }
 
     public void setEditableColumns(ArrayList colEditables) {
         this.colEditables = colEditables;
+    }
+    
+    public void setEditableColumns(int ... colEditables) {
+        for (int i : colEditables) {
+            this.colEditables.add(i);
+        }
     }
 
     public void addEditableColumn(int col) {
@@ -243,7 +249,21 @@ public class TableMO extends AbstractTableModel {
         }
 
         fireTableRowsDeleted(rowIndex, rowIndex);
-    }    
+    }
+    
+    public void removeRowObject(Object o) {
+        int rowIndex = this.lstRowObjects.indexOf(o);
+        Object objOld = this.lstRowObjects.remove(o);
+        UndoableEditListener listeners[] = getListeners(UndoableEditListener.class);
+        TableRemoveRowUndoableEdit undo = new TableRemoveRowUndoableEdit(this, objOld, objOld, rowIndex);
+        UndoableEditEvent editEvent = new UndoableEditEvent(this, undo);
+
+        for (UndoableEditListener listener : listeners) {
+            listener.undoableEditHappened(editEvent);
+        }
+
+        fireTableRowsDeleted(rowIndex, rowIndex);
+    }
 
     public int getPageOffset() {
         return pageOffset;

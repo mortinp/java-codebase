@@ -17,7 +17,12 @@ public abstract class DAOAggregated extends DAOBase {
         super(dataSourceContextName, toObjectMapper);
     }
     
-    protected abstract String getFindByParentStatement();
+    private String getFindByParentStatement() {
+        String sql = buildSQLWithCondition(parseStatement(getFindAllStatement()), getTableName() + "." + getParentRefFieldName() + " = ?");
+        return sql;
+    }
+    
+    protected abstract String getParentRefFieldName();
     
     public List findByParent(Object valorID) {
         return obtenerListaResultadoSentencia(getFindByParentStatement(), new Object[] {valorID});

@@ -4,7 +4,6 @@
  */
 package org.base.core.presentation.validation.components.samples;
 
-import org.base.core.presentation.validation.components.samples.AbstractComponentValidator;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 import org.base.core.util.messages.MessageFactory;
