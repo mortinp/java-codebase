@@ -4,22 +4,21 @@
  */
 package org.base.core.presentation.screens.extensions;
 
-import org.base.core.util.ObjectsFactory;
+import org.base.core.domain.extensions.IRestorable;
+import org.base.core.domain.ObjectsFactory;
 import org.base.core.delegates.IModelReceiver;
 import org.base.core.exceptions.DomainException;
-import org.base.core.presentation.validation.IValidationStatusReceiver;
+import org.base.core.exceptions.ExceptionWrapAsRuntime;
 
 /**
  *
  * @author mproenza
  */
-public abstract class DefaultModelEditor extends ModelEditor implements IValidationStatusReceiver {
+public abstract class DefaultModelEditor extends ModelEditor {
     
     protected Object objModel;
     private Object modelInitialState;
     private String modelAlias;
-    
-    boolean validationPassed = true;
     
     boolean closeOnAccept = true;
     public void setCloseOnAccept(boolean closeOnAccept) {
@@ -28,6 +27,11 @@ public abstract class DefaultModelEditor extends ModelEditor implements IValidat
     
     public DefaultModelEditor(IModelReceiver objRecibidor, String modelAlias) {
         super(objRecibidor);
+        this.modelAlias = modelAlias;
+    }
+    
+    public DefaultModelEditor(String title, IModelReceiver objRecibidor, String modelAlias) {
+        super(title, objRecibidor);
         this.modelAlias = modelAlias;
     }
 
@@ -47,28 +51,24 @@ public abstract class DefaultModelEditor extends ModelEditor implements IValidat
 
     @Override
     protected abstract void clearFields();
-
-    @Override
-    public void validateFailed(String failureMessage) {
-        showWarningMessage(failureMessage);
-        validationPassed = false;
-    }
-
-    @Override
-    public void validatePassed() {
-        validationPassed = true;
-    }
     
-    public void accept() {
-        if(validationPassed) {
-            try {
-                buildModel();
-                sendToReceiver(objModel);
-                if(closeOnAccept) close();
-            } catch (DomainException ex) {
-                rollback();
-                showWarningMessage(ex.getMessage());
+    @Override
+    protected void doAccept() {
+        try {
+            buildModel();
+            sendToReceiver(objModel);
+            
+            if(closeOnAccept) close();
+            else if(editionMode == false) {
+                createNewModel();
+                clearFields();
             }
+        } catch (DomainException ex) {
+            rollback();
+            showWarningMessage(ex.getMessage());
+        } catch (ExceptionWrapAsRuntime ex) {
+            rollback();
+            showWarningMessage(ex.getMessage());
         }
     }
     

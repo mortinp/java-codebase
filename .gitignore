@@ -1,5 +1,15 @@
 sales-*/
-skeleton/
 *.backup
 *.zip
 *.sql
+
+lacteos-*/
+payment-*/
+point-of-sale-*/
+stuff sales/
+esrms/
+suite-common/
+networking/
+projects-common/
+*.txt
+.svn*

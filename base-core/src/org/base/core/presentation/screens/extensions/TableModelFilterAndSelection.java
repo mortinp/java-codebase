@@ -5,6 +5,8 @@
 package org.base.core.presentation.screens.extensions;
 
 import org.base.core.delegates.IModelReceiver;
+import org.base.core.delegates.ITableModelChangeReceiver;
+import org.base.core.exceptions.DomainException;
 
 /**
  *
@@ -12,16 +14,27 @@ import org.base.core.delegates.IModelReceiver;
  */
 public class TableModelFilterAndSelection extends TableModelFilter {
     
-    IModelReceiver objRecibidor;
+    IModelReceiver objModelReceiver = null;
+    ITableModelChangeReceiver objTableModelChangeReceiver = null;
     
-    public TableModelFilterAndSelection(IModelReceiver objRecibidor) {       
-        this.objRecibidor = objRecibidor;  
+    public TableModelFilterAndSelection(String title, IModelReceiver objModelReceiver) {
+        super(title);
+        this.objModelReceiver = objModelReceiver;
     }
     
-    public void sendObject(int filaIndex) {
+    public TableModelFilterAndSelection(String title, ITableModelChangeReceiver objTableModelChangeReceiver) { 
+        super(title);
+        this.objTableModelChangeReceiver = objTableModelChangeReceiver;  
+    }
+    
+    public void sendObject(int filaIndex) throws DomainException {
         Object objModelo = entityTableModel.getRowObjectAt(filaIndex);
+        
+        if(objModelReceiver != null) objModelReceiver.receiveModel(objModelo);
+        else if(objTableModelChangeReceiver != null) objTableModelChangeReceiver.addModel(objModelo);
+        
         hide();
         initialize();
-        objRecibidor.receiveModel(objModelo);     
+             
     }   
 }

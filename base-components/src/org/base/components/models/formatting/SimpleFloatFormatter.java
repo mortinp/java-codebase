@@ -25,6 +25,6 @@ public class SimpleFloatFormatter implements IFormatter {
 
     @Override
     public Object format(Object obj) {
-        return Float.parseFloat(formatter.format((Float)obj));
+        return /*Float.parseFloat(*/formatter.format(/*(Float)*/obj)/*)*/;
     }
 }

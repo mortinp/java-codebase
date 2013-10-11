@@ -4,6 +4,8 @@
  */
 package org.base.core.presentation.screens;
 
+import java.awt.Image;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -19,15 +21,24 @@ public class ScreenBase extends JPanel implements IScreen {
     public static final int ACTION_REJECTED_OPTION = JOptionPane.NO_OPTION;
     //contenedor
     protected DialogBase dialog;
-    protected String title = "Captar datos";
+    protected String title = "Captar Datos";
+    
+    
+    public static Image icon = null;
 
     public ScreenBase() {
-        this.dialog = new DialogBase(this.dialog, this.title);
+        initializeDialog();
     }
 
     public ScreenBase(String title) {
-        this();
         this.title = title;
+        initializeDialog();
+    }
+    
+    private void initializeDialog() {
+        JFrame parent = new JFrame();
+        if(icon != null) parent.setIconImage(icon);
+        this.dialog = new DialogBase(parent, this.title);
     }
 
     @Override
@@ -56,8 +67,4 @@ public class ScreenBase extends JPanel implements IScreen {
     public static int showConfirmationMessage(String mensaje) {
         return JOptionPane.showConfirmDialog(null, mensaje, "Confirmación", JOptionPane.YES_NO_OPTION);
     }
-    
-    /*public static void mostrarMensajeModeloNoEncontrado(JTextField campo, String nombreModelo) {
-        campo.setText(nombreModelo.toUpperCase() + " NO ENCONTRADO"); 
-    }*/
 }

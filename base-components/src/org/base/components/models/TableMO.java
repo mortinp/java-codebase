@@ -6,14 +6,12 @@ package org.base.components.models;
 
 import org.base.components.models.parsing.ITableModelDataExtractor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 import org.base.components.models.util.TableRemoveRowUndoableEdit;
 
 /**
@@ -41,8 +39,8 @@ public class TableMO extends AbstractTableModel {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="STRUCTURAL MODEL">
-    ArrayList colNames = null;
-    ArrayList colWidths = null; //longitudes de las columnas
+    //ArrayList colNames = null;
+    //ArrayList colWidths = null; //longitudes de las columnas
     List colEditables = null;  //columnas editables
     
     int pageOffset;
@@ -70,22 +68,11 @@ public class TableMO extends AbstractTableModel {
         this.pageSize = 1000000;
     }
     
-    public TableMO(List colNames, List colWidths, ITableModelDataExtractor dataConfigParser) {
+    public TableMO(/*List colNames, List colWidths, */ITableModelDataExtractor dataConfigParser) {
         this();
-        this.colNames = new ArrayList(colNames);
-        this.colWidths = new ArrayList(colWidths);
+        //this.colNames = new ArrayList(colNames);
+        //this.colWidths = new ArrayList(colWidths);
         this.dataConfigParser = dataConfigParser;
-    }
-
-    public TableMO(Collection dataList, List colNames) {
-        this();
-        this.colNames = new ArrayList(colNames);
-    }
-
-    public TableMO(ArrayList<ArrayList> data, List colNames) {
-        this();
-        this.colNames = new ArrayList(colNames);
-        this.dataMatrix = data;       
     }
     //</editor-fold>
 
@@ -98,12 +85,12 @@ public class TableMO extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return this.colNames.size();
+        return this.dataConfigParser.getColumnNames().size();
     }
 
     @Override
     public String getColumnName(int column) {
-        return (String) this.colNames.get(column);
+        return (String) this.dataConfigParser.getColumnNames().get(column);
     }
 
     @Override
@@ -168,11 +155,7 @@ public class TableMO extends AbstractTableModel {
         CompTable comp = new CompTable(row);
         Collections.sort(dataMatrix, comp);
     }
-
-    public TableCellRenderer getCellRenderer(int row, int column) {
-        return getCellRenderer(row, column);
-    }
-
+    
     public List getEditableColumns() {
         return colEditables;
     }
@@ -191,21 +174,21 @@ public class TableMO extends AbstractTableModel {
         colEditables.add(col);
     }
 
-    public ArrayList getColumnsWidths() {
-        return colWidths;
+    public List getColumnsWidths() {
+        return dataConfigParser.getColumnWidths();
     }
 
-    public void setColumnsWidths(ArrayList colWidths) {
+    /*public void setColumnsWidths(ArrayList colWidths) {
         this.colWidths = colWidths;
-    }       
+    }  */     
 
-    public ArrayList getColumnsNames() {
-        return colNames;
+    public List getColumnsNames() {
+        return dataConfigParser.getColumnNames();
     }
 
-    public void setColumnsNames(ArrayList colNames) {
+    /*public void setColumnsNames(ArrayList colNames) {
         this.colNames = colNames;
-    }
+    }*/
     
     public ArrayList getRowObjects(int ... at) {
         ArrayList rowObjs = new ArrayList();
@@ -253,6 +236,7 @@ public class TableMO extends AbstractTableModel {
     
     public void removeRowObject(Object o) {
         int rowIndex = this.lstRowObjects.indexOf(o);
+        if(rowIndex < 0) return; 
         Object objOld = this.lstRowObjects.remove(o);
         UndoableEditListener listeners[] = getListeners(UndoableEditListener.class);
         TableRemoveRowUndoableEdit undo = new TableRemoveRowUndoableEdit(this, objOld, objOld, rowIndex);
@@ -315,11 +299,6 @@ public class TableMO extends AbstractTableModel {
     public void clearModel() {
         this.dataMatrix.clear();
         this.lstRowObjects.clear();
-    }
-
-    public String getPagesString() {
-        //TODO: configure string in file
-        return "Página: " + (pageOffset + 1) + " de " + getPageCount();
     }
 
     public ArrayList<ArrayList> getData() {

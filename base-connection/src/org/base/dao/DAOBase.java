@@ -1,5 +1,7 @@
 package org.base.dao;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.base.dao.searches.IDataMappingStrategy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,17 +15,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import org.base.dao.datasources.connections.AbstractConnectionPool;
-import org.base.exceptions.system.SystemException;
 import org.base.dao.searches.modules.IDataSearchModule;
 import org.base.dao.datasources.context.DataSourceContext;
 import org.base.dao.datasources.context.RegistryDataSourceContext;
 import org.base.dao.datasources.context.IDataSourceContextInjectable;
 import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
 import org.base.dao.exceptions.ExceptionDBEntryNotFound;
-import org.base.dao.exceptions.ExceptionDBForeignKey;
-import org.base.dao.exceptions.ExceptionDBNonExistingReference;
+import org.base.dao.exceptions.ExceptionDBEntryReferencedElsewhere;
+import org.base.dao.exceptions.ExceptionDBProgrammerMistake;
+import org.base.dao.exceptions.ExceptionDBUnknownError;
+import org.base.dao.filters.AbstractFilterBase;
 import org.base.dao.filters.IFilter;
+import org.base.dao.wrappers.ResultSetWrapper;
+import org.base.utils.io.FileIO;
 
 /**
  *
@@ -97,10 +101,20 @@ public abstract class DAOBase implements IDAO {
         this.toObjectMapper = toObjectMapper;
     }
     
-    /*public static String getSchema() {
-        return ConexionJDBC.getSchema();
-    }*/
+    protected void useTemporalMapper(IDataMappingStrategy tempMapper) {
+        toObjectMapperTemporal = tempMapper;
+    }
     
+    protected boolean isSetTemporalMapper() {
+        return toObjectMapperTemporal != null;
+    }
+    
+    protected void resetTemporalMapper() {
+        toObjectMapperTemporal = null;
+    }
+    // </editor-fold>
+        
+    // <editor-fold defaultstate="collapsed" desc="METODOS CONTEXTO">
     protected String getContextualTableName() {
         return dataSourceContext.getDBObjectExpression(getTableName());
     }
@@ -130,16 +144,8 @@ public abstract class DAOBase implements IDAO {
         dataSourceContext.close(stm);
     }
     
-    protected void useTemporalMapper(IDataMappingStrategy tempMapper) {
-        toObjectMapperTemporal = tempMapper;
-    }
-    
-    protected boolean isSetTemporalMapper() {
-        return toObjectMapperTemporal != null;
-    }
-    
-    protected void resetTemporalMapper() {
-        toObjectMapperTemporal = null;
+    protected void manageContextualException(SQLException ex) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere{
+        dataSourceContext.manageDBException(ex);
     }
     // </editor-fold>
 
@@ -162,7 +168,7 @@ public abstract class DAOBase implements IDAO {
      * An example of a valid string is (a string|integer value pair): "stringValue|25".
      * Key fields names expression and key fields values expression should match fields and values in a one to one basis.
      */
-    protected abstract Object getKeyValueExpression(Object obj);
+    public abstract Object getKeyValueExpression(Object obj);
     
     /**
      * Returns a map containing (field name, value) pairs. This map is used during the object insertion,
@@ -203,8 +209,9 @@ public abstract class DAOBase implements IDAO {
             StatementData stmtData = createInsertionData(getInsertionMap(objModelo));
             pstm = prepareStatement(stmtData.getQuery(), stmtData.getParams(), conn);
             executeStatement(pstm, conn);
-        } catch (ExceptionDBForeignKey ex) {
-            throw new ExceptionDBNonExistingReference();
+        } catch (ExceptionDBEntryReferencedElsewhere ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         }
     }
     
@@ -224,9 +231,10 @@ public abstract class DAOBase implements IDAO {
                 matrizParametros.add(stmtData.getParams());
                 query = stmtData.getQuery();
             }
-            ejecutarSentenciaBatch(query, matrizParametros);
-        } catch (ExceptionDBForeignKey ex) {
-            throw new SystemException(ex);
+            executeBatchStatement(query, matrizParametros);
+        } catch (ExceptionDBEntryReferencedElsewhere ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         }
     }
     
@@ -236,11 +244,11 @@ public abstract class DAOBase implements IDAO {
      * of abstract methods), or some other kind of mapping mechanism.
      */
     @Override
-    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
+    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere {
         update(objModelo, getContextualConnection());                
     }
     
-    protected void update(Object objModelo, Connection conn) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
+    protected void update(Object objModelo, Connection conn) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere {
         PreparedStatement pstm = null;       
         try {   
             StatementData stmtData = createUpdateData(getKeyValueExpression(objModelo), getUpdateMap(objModelo));
@@ -250,7 +258,8 @@ public abstract class DAOBase implements IDAO {
                 throw new ExceptionDBEntryNotFound();
             }
         } catch (ExceptionDBDuplicateEntry ex) {
-            throw new SystemException(ex);
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         }
     }
     
@@ -261,7 +270,7 @@ public abstract class DAOBase implements IDAO {
      * the same batch, so this method is suitable for the repetitive update of multiple objects.
      */
     @Override
-    public void update(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
+    public void update(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere {
         try {
             List<Object[]> matrizParametros = new ArrayList<Object[]>(lstModelos.size());
             String query = null;
@@ -270,9 +279,10 @@ public abstract class DAOBase implements IDAO {
                 matrizParametros.add(stmtData.getParams());
                 query = stmtData.getQuery();
             }
-            ejecutarSentenciaBatch(query, matrizParametros);
+            executeBatchStatement(query, matrizParametros);
         } catch (ExceptionDBDuplicateEntry ex) {
-            throw new SystemException(ex);
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         }
     }
 
@@ -282,12 +292,12 @@ public abstract class DAOBase implements IDAO {
      * of abstract methods), or some other kind of mapping mechanism.
      */
     @Override
-    public void remove(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
+    public void remove(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere {
         remove(objModelo, getContextualConnection());
     }
     
     
-    protected void remove(Object objModelo, Connection conn) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
+    protected void remove(Object objModelo, Connection conn) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere {
         String condicion = prepareConditionWithKey(getKeyValueExpression(objModelo));
         PreparedStatement pstm = null;
         try { 
@@ -297,12 +307,13 @@ public abstract class DAOBase implements IDAO {
                 throw new ExceptionDBEntryNotFound();
             }
         } catch (ExceptionDBDuplicateEntry ex) {
-            throw new SystemException(ex);
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } 
     }
     
     @Override
-    public void remove(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey {
+    public void remove(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere {
     }
 
     @Override
@@ -327,7 +338,8 @@ public abstract class DAOBase implements IDAO {
     public List findAll() {
         Connection conn = getContextualConnection();        
         String sql = parseStatement(getFindAllStatement());
-        PreparedStatement pstm = prepareStatement(buildSQLWithFilters(sql, filters, endingFilters), null, conn);
+        sql = buildSQLWithFilters(sql, filters, endingFilters);
+        PreparedStatement pstm = prepareStatement(sql, null, conn);
         //pstm = conn.prepareStatement(formarSentenciaSQLConFiltros(sql), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         if(isSetTemporalMapper()) {
             List result = obtenerListaResultadoSentencia(pstm, conn, toObjectMapperTemporal);
@@ -340,15 +352,15 @@ public abstract class DAOBase implements IDAO {
     
     // <editor-fold defaultstate="collapsed" desc="SERVICIOS">
     public Object findOne(IDataSearchModule searchModule) {
-        return obtenerObjetoResultadoSentencia(searchModule.getQuery(), 
-                                               searchModule.getParameters(), 
-                                               searchModule.getDataMappingStrategy());
+        return findOne(searchModule.getQuery(), 
+                       searchModule.getParameters(), 
+                       searchModule.getDataMappingStrategy());
     }
     
     public List findMany(IDataSearchModule searchModule) {
-        return obtenerListaResultadoSentencia(searchModule.getQuery(), 
-                                              searchModule.getParameters(), 
-                                              searchModule.getDataMappingStrategy());
+        return findMany(searchModule.getQuery(), 
+                          searchModule.getParameters(), 
+                          searchModule.getDataMappingStrategy());
     }
     
     public void ejecutaFuncion(String strNombreFuncion, Object[] listaParametros) {
@@ -369,63 +381,68 @@ public abstract class DAOBase implements IDAO {
             pstm.execute();
 
         } catch (Exception ex) {
-            throw new SystemException(ex);
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } finally {
-            //try {
-                closeContextualStatement(pstm);
-                closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
     }
     
-    public void ejecutarConsulta(String consulta, Object[] listaParametros) {
+    public void executeQuery(String consulta, Object ... listaParametros) throws Exception {
         PreparedStatement pstm = null;
         Connection conn = getContextualConnection();
         try {
             pstm = prepareStatement(consulta, listaParametros, conn);
             pstm.executeUpdate();
         } catch (Exception ex) {
-            throw new SystemException(ex);
+            throw ex;
         } finally {
-            //try {
-                closeContextualStatement(pstm);
-                closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
-    }
+    }    
     
-    public void deleteAllTableRows(IFilter ... filters) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
-        ejecutarSentencia(buildSQLWithFilters("DELETE FROM " + getContextualTableName(), Arrays.asList(filters), null), null);
-    }
     // </editor-fold> 
   
-    // <editor-fold defaultstate="collapsed" desc="OTROS METODOS">   
-    protected int ejecutarSentencia(String sql, Object[] parametros) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
+    // <editor-fold defaultstate="collapsed" desc="OTROS METODOS">
+    
+    public void deleteAllTableRows(IFilter ... filters) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere {
+        executeStatement(buildSQLWithFilters("DELETE FROM " + getContextualTableName(), Arrays.asList(filters), null), null);
+    }
+    
+    protected int executeStatement(String sql, Object[] parametros) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere {
         sql = parseStatement(sql);
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return executeStatement(pstm, conn);            
     }
     
-    protected int[] ejecutarSentenciaBatch(String sql, List<Object[]> matrizParametros) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
+    protected int[] executeBatchStatement(String sql, List<Object[]> matrizParametros) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere {
         sql = parseStatement(sql);
         Connection conn = getContextualConnection();
         PreparedStatement pstm = prepararSentenciaBatch(sql, matrizParametros, conn);
         return ejecutarSentenciaBatch(pstm, conn);
     }
     
-    protected Object obtenerObjetoResultadoSentencia(String sql, Object[] parametros) {
+    protected Object findOne(String sql, Object[] parametros) {
         sql = parseStatement(sql);
         if(isSetTemporalMapper()) {
-            Object result = obtenerObjetoResultadoSentencia(sql, parametros, toObjectMapperTemporal);
+            Object result = findOne(sql, parametros, toObjectMapperTemporal);
             resetTemporalMapper();
             return result;
         }
-        return obtenerObjetoResultadoSentencia(sql, parametros, toObjectMapper);            
+        return findOne(sql, parametros, toObjectMapper);            
+    }
+    
+    protected List findMany(String sql, Object[] parametros) {
+        sql = parseStatement(sql);
+        if(isSetTemporalMapper()) {
+            List result = findMany(sql, parametros, toObjectMapperTemporal);
+            resetTemporalMapper();
+            return result;
+        }
+        return findMany(sql, parametros, toObjectMapper);            
     }
     
     /**
@@ -440,45 +457,42 @@ public abstract class DAOBase implements IDAO {
      * 
      * BEWARE: A null object could be returned if the result set is empty (I've seen it in practice!!!), so use it wisely.
      */
-    protected Object obtenerObjetoResultadoSentencia(String sql, Object[] parametros, IDataMappingStrategy mapper) {
-        sql = parseStatement(sql);
+    protected Object findOne(String sql, Object[] parametros, IDataMappingStrategy mapper) {
         Connection conn = getContextualConnection();
+        return findOne(sql, parametros, mapper, conn);           
+    }
+    
+    protected Object findOne(String sql, Object[] parametros, IDataMappingStrategy mapper, Connection conn) {
+        sql = parseStatement(sql);
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return obtenerObjetoResultadoSentencia(pstm, conn, mapper);            
     }
     
-    protected List obtenerListaResultadoSentencia(String sql, Object[] parametros) {
-        sql = parseStatement(sql);
-        if(isSetTemporalMapper()) {
-            List result = obtenerListaResultadoSentencia(sql, parametros, toObjectMapperTemporal);
-            resetTemporalMapper();
-            return result;
-        }
-        return obtenerListaResultadoSentencia(sql, parametros, toObjectMapper);            
+    protected List findMany(String sql, Object[] parametros, IDataMappingStrategy mapper) {
+        Connection conn = getContextualConnection();
+        return findMany(sql, parametros, mapper, conn);            
     }
     
-    protected List obtenerListaResultadoSentencia(String sql, Object[] parametros, IDataMappingStrategy mapper) {
+    protected List findMany(String sql, Object[] parametros, IDataMappingStrategy mapper, Connection conn) {
         sql = parseStatement(sql);
-        Connection conn = getContextualConnection();
         PreparedStatement pstm = prepareStatement(sql, parametros, conn);
         return obtenerListaResultadoSentencia(pstm, conn, mapper);            
-    }   
+    }
+    
+    protected List findMany(IDataMappingStrategy mapper, IFilter ... filters) {
+        Connection conn = getContextualConnection();
+        String sql = parseStatement(getFindAllStatement());
+        PreparedStatement pstm = prepareStatement(buildSQLWithFilters(sql, Arrays.asList(filters), null), null, conn);
+        return obtenerListaResultadoSentencia(pstm, conn, mapper);
+    }
+       
     // </editor-fold>  
     
     // <editor-fold defaultstate="collapsed" desc="METODOS ACCESO">
-    protected static PreparedStatement prepareStatement(String sql, Object[] parametros, Connection conn) {
-        try {
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            adicionarParametrosSentencia(pstm, parametros);            
-            return pstm;
-        } catch (SQLException ex) {
-            throw new SystemException(ex);
-        }
-    }
-    
     private PreparedStatement prepararSentenciaBatch(String sql, List<Object[]> matrizParametros, Connection conn) {
+        PreparedStatement pstm = null;
         try {
-            PreparedStatement pstm = conn.prepareStatement(sql);
+            pstm = conn.prepareStatement(sql);
             if (matrizParametros != null) {
                 for (int i = 0; i < matrizParametros.size(); i++) {
                     Object[] params = matrizParametros.get(i);
@@ -488,7 +502,11 @@ public abstract class DAOBase implements IDAO {
             }
             return pstm;
         } catch (SQLException ex) {
-            throw new SystemException(ex);
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
+        } finally {
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
     }
     
@@ -496,19 +514,37 @@ public abstract class DAOBase implements IDAO {
         if (parametros != null) {
             for (int i = 0; i < parametros.length; i++) {
                 Object parametro = parametros[i];
-                pstm.setObject(i + 1, parametro, getSQLTypeForObject(parametro));
+                if(parametro != null && parametro instanceof InputStream) {
+                    try {
+                        pstm.setBinaryStream(i + 1,(InputStream) parametro, (int) ((InputStream)parametro).available());
+                    } catch (IOException ex) {
+                        DAOPackage.log(ex);
+                        throw new ExceptionDBUnknownError(ex);
+                    } catch (Exception ex) {
+                        try {
+                            DAOPackage.log(ex);
+                            //TODO: setBytes
+                            pstm.setBytes(i + 1, FileIO.inputStreamToBytes((InputStream) parametro));
+                            //pstm.set(i + 1, parametro, getSQLTypeForObject(parametro));
+                        } catch (IOException ex1) {
+                            DAOPackage.log(ex);
+                            throw new ExceptionDBUnknownError(ex);
+                        }
+                    }
+                } else
+                    pstm.setObject(i + 1, parametro, getSQLTypeForObject(parametro));
             }
         }
     }
     
-    private int executeStatement(PreparedStatement pstm, Connection conn) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
+    private int executeStatement(PreparedStatement pstm, Connection conn) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere {
         int filasAfectadas = 0;
         //boolean errorSistema = false;
         try {          
             filasAfectadas = pstm.executeUpdate();
-            return filasAfectadas;
+            //return filasAfectadas;
         } catch (SQLException ex) {
-            if (ex.getSQLState() == null) {
+            /*if (ex.getSQLState() == null) {
                 ex = (SQLException) ex.getCause();
             }
             if (ex.getSQLState().equals(AbstractConnectionPool.UNIQUE_VIOLATION)) {
@@ -516,30 +552,28 @@ public abstract class DAOBase implements IDAO {
             } else if(ex.getSQLState().equals(AbstractConnectionPool.FOREIGN_KEY_VIOLATION)) {
                 throw new ExceptionDBForeignKey();
             } else {
-                //errorSistema = true;
-                throw new SystemException(ex);
-            }
-        } catch (Exception unknown) {
-            //errorSistema = true;
-            throw new SystemException(unknown);
+                DAOPackage.log(ex);
+                throw new ExceptionDBUnknownError(ex);
+            }*/
+            manageContextualException(ex);
+        } catch (Exception ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } finally {
-            //try {
-                closeContextualStatement(pstm);
-                closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
+        return filasAfectadas;
     }
     
-    private int[] ejecutarSentenciaBatch(PreparedStatement pstm, Connection conn) throws ExceptionDBDuplicateEntry, ExceptionDBForeignKey {
+    private int[] ejecutarSentenciaBatch(PreparedStatement pstm, Connection conn) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere {
         int filasAfectadas [] = {};
         //boolean errorSistema = false;
         try {          
             filasAfectadas = pstm.executeBatch();
-            return filasAfectadas;
+            //return filasAfectadas;
         } catch (SQLException ex) {
-            if (ex.getSQLState() == null) {
+            /*if (ex.getSQLState() == null) {
                 ex = (SQLException) ex.getCause();
             }
             if (ex.getSQLState().equals(AbstractConnectionPool.UNIQUE_VIOLATION)) {
@@ -547,20 +581,18 @@ public abstract class DAOBase implements IDAO {
             } else if(ex.getSQLState().equals(AbstractConnectionPool.FOREIGN_KEY_VIOLATION)) {
                 throw new ExceptionDBForeignKey();
             } else {
-                //errorSistema = true;
-                throw new SystemException(ex);
-            }
-        } catch (Exception unknown) {
-            //errorSistema = true;
-            throw new SystemException(unknown);
+                DAOPackage.log(ex);
+                throw new ExceptionDBUnknownError(ex);
+            }*/
+            manageContextualException(ex);
+        } catch (Exception ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } finally {
-            //try {
-                closeContextualStatement(pstm);
-                closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
+        return filasAfectadas;
     }
     
     private Object obtenerObjetoResultadoSentencia(PreparedStatement pstm, Connection conn, IDataMappingStrategy mapper) {
@@ -569,18 +601,15 @@ public abstract class DAOBase implements IDAO {
         try {          
             rs = pstm.executeQuery();
             if (rs.next()) {
-                obj = mapper.createResultObject(rs);
+                obj = mapper.createResultObject(new ResultSetWrapper(rs));
             }            
             return obj;
-        } catch (Exception unknown) {
-            throw new SystemException(unknown);
+        } catch (Exception ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } finally {
-            //try {
                 closeContextualStatement(pstm);
                 closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
         }
     }
     
@@ -589,17 +618,14 @@ public abstract class DAOBase implements IDAO {
         List lstLista = new ArrayList();
         try {          
             rs = pstm.executeQuery();
-            lstLista = mapper.createResultList(rs);
+            lstLista = mapper.createResultList(new ResultSetWrapper(rs));
             return lstLista;
-        } catch (Exception unknown) {
-            throw new SystemException(unknown);
+        } catch (Exception ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } finally {
-            //try {
-                closeContextualStatement(pstm);
-                closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
     }
     
@@ -609,22 +635,42 @@ public abstract class DAOBase implements IDAO {
         PreparedStatement pstm = null;
         try {  
             String sql = parseStatement(getFindAllStatement());
-            pstm = conn.prepareStatement(buildSQLWithFilters(buildSQLWithCondition(sql, conditionKeys), filters, endingFilters));
+            sql = buildSQLWithFilters(buildSQLWithCondition(sql, conditionKeys), filters, endingFilters);
+            pstm = conn.prepareStatement(sql);
             return obtenerObjetoResultadoSentencia(pstm, conn, mapper);
-        } catch (Exception unknown) {
-            throw new SystemException(unknown);
+        } catch (Exception ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         } finally {
-            //try {
-                closeContextualStatement(pstm);
-                closeContextualConnection(conn);
-            //} catch (SQLException ex) {
-                //throw new SistemaExcepcion(ex);
-            //}
+            closeContextualStatement(pstm);
+            closeContextualConnection(conn);
         }
     }
     // </editor-fold> 
     
     // <editor-fold defaultstate="collapsed" desc="METODOS AUXILIARES">
+    protected static PreparedStatement prepareStatement(String sql, Object[] parametros, Connection conn) {
+        try {
+            PreparedStatement pstm = conn.prepareStatement(sql);
+            adicionarParametrosSentencia(pstm, parametros);            
+            return pstm;
+        } catch (SQLException ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
+        }
+    }
+    
+    protected static PreparedStatement prepareStatementAutogeneratedKey(String sql, Object[] parametros, Connection conn) {
+        try {
+            PreparedStatement pstm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            adicionarParametrosSentencia(pstm, parametros);            
+            return pstm;
+        } catch (SQLException ex) {
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
+        }
+    }
+    
     protected StatementData createInsertionData(Map<String, Object> mapFieldsValues) {
         String query = "INSERT INTO " + getContextualTableName() + " (";
         String valuesReplacements = "";
@@ -670,15 +716,17 @@ public abstract class DAOBase implements IDAO {
     }
     
     protected String prepareConditionWithKey(Object objLlave) {
+        if(objLlave == null) return "";
+        
         StringTokenizer kst = new StringTokenizer(getKeyFields(), "|");
-        StringTokenizer vst = new StringTokenizer((String) objLlave, "|");
+        StringTokenizer vst = new StringTokenizer(String.valueOf(objLlave), "|");
 
         if(kst.countTokens() <= 0)
-            throw new SystemException("No key fields defined for object '" + getTableName() + "'");
+            throw new ExceptionDBProgrammerMistake("No key fields defined for object '" + getTableName() + "'");
         else if(vst.countTokens() <= 0)
-            throw new SystemException("No key fields defined for object '" + getTableName() + "'");
+            throw new ExceptionDBProgrammerMistake("No key fields defined for object '" + getTableName() + "'");
         else if(kst.countTokens() != vst.countTokens())
-            throw new SystemException("Mismatch between key fields and values in object '" + getTableName() + "'");
+            throw new ExceptionDBProgrammerMistake("Mismatch between key fields and values in object '" + getTableName() + "'");
 
         String condition = "";
         String separator = "";
@@ -688,7 +736,22 @@ public abstract class DAOBase implements IDAO {
 
             if((valor instanceof String) && !(((String)valor).startsWith("'") && ((String)valor).endsWith("'")))
                 valor = "'" + valor + "'";
-            condition += separator + getTableName() + "." + llave + " = " + valor;
+            
+            /* NOTE ON THE FOLLOWING LINE: 
+             * Hay veces que en las consultas a las que se les va a adicionar una condicion, se han especificado alias para las tablas 
+             * que intervienen en las mismas.
+             * Esto provoca que la condicion debe usar el alias especificado en la consulta, en vez del nombre original de la tabla.
+             * Por otro lado, hay veces que el nombre de un campo es ambiguo (tiene el mismo nombre en varias tablas usadas en la consulta)
+             * , y la forma de evitar la ambiguedad es especificando la tabla a la que pertenece.
+             * Por tanto, para evitar las ambiguedades, se deberia especificar en nombre o alias de la tabla en la condicion.
+             * Como no se puede saber el alias de la tabla, la unica solucion es invocar a getTableName() y esperar que las consultas no
+             * usen alias para las tablas.
+             */
+            // UPDATE: maybe this solves the problem
+            // En caso de usar un alias, la llave se deberia dar con el alias.
+            if(!((String)llave).contains(".")) llave = getTableName() + "." + llave;
+            condition += separator + /*getTableName() + "." +*/ llave + " = " + valor; 
+            
             separator = " AND ";
         }
         return condition;
@@ -703,7 +766,9 @@ public abstract class DAOBase implements IDAO {
                 if(filter instanceof IDataSourceContextInjectable) 
                     ((IDataSourceContextInjectable)filter).setDataSourceContext(dataSourceContext);
                 
-                condition += concat + filter.getFilterExpression();
+                String filterExp = filter.getFilterExpression();
+                if(!filterExp.contains(".")) filterExp = getTableName() + "." + filterExp;
+                condition += concat + filterExp;
                 concat = " AND ";
             }
             //condition = condition.substring(0, condition.length() - 4);
@@ -717,7 +782,9 @@ public abstract class DAOBase implements IDAO {
                 if(filter instanceof IDataSourceContextInjectable) 
                     ((IDataSourceContextInjectable)filter).setDataSourceContext(dataSourceContext);
                 
-                terminalExpression += " " + filter.getFilterExpression();
+                String filterExp = filter.getFilterExpression();
+                if(!filterExp.contains(".")) filterExp = getTableName() + "." + filterExp;
+                terminalExpression += " " + filterExp;
             }
         }
         sql += terminalExpression;
@@ -726,11 +793,13 @@ public abstract class DAOBase implements IDAO {
     }
     
     protected static String buildSQLWithCondition(String sql, String condition) {
+        if(condition == null || condition.isEmpty()) return sql;
         String sqlFilter = "";
+        
+        // Don't mess with things in nested queries
+        String[] sqlSplt1 = sql.split("\\)");// ending part without nested queries
+        String[] sqlSplt2 = sqlSplt1[0].split("\\(");// starting part without nested queries
         if(condition != null && !"".equals(condition)) {
-            //skip WHEREs in nested queries
-            String[] sqlSplt1 = sql.split("\\)");// ending part without nested queries
-            String[] sqlSplt2 = sqlSplt1[0].split("\\(");// startign part without nested queries
             if (!sqlSplt1[sqlSplt1.length - 1].toLowerCase().contains("where") &&
                 !sqlSplt2[0].toLowerCase().contains("where")) {
                 sqlFilter = " WHERE ";
@@ -739,19 +808,31 @@ public abstract class DAOBase implements IDAO {
             }
             sqlFilter += condition;
         }
-
-        //insert condition before GROUP/ORDER BY
-        String regexGroupBy = "^SELECT\\s+.+\\s+GROUP\\s+BY\\s+.+";
-        String regexOrderBy = "^SELECT\\s+.+\\s+ORDER\\s+BY\\s+.+";
+        
+        // Insert condition before GROUP/ORDER BY (See code below)
+        
+        /* VERSION 1 (OLD)*/
+        /*String regexGroupBy = "(?i)^SELECT\\s+.+\\s+GROUP\\s+BY\\s+.+";
+        String regexOrderBy = "(?i)^SELECT\\s+.+\\s+ORDER\\s+BY\\s+.+";
+        //sql = sql.toUpperCase();
         if (sql.matches(regexGroupBy)) {                
-            sql = sql.replaceAll("\\s+GROUP\\s+BY\\s+", sqlFilter + " GROUP BY ");            
-        } 
-        else if(sql.matches(regexOrderBy)) {
-            sql = sql.replaceAll("\\s+ORDER\\s+BY\\s+", sqlFilter + " ORDER BY "); 
-        }                
-        else {
+            sql = sql.replaceAll("(?i)\\s+GROUP\\s+BY\\s+", sqlFilter + " GROUP BY ");            
+        } else if(sql.matches(regexOrderBy)) {
+            sql = sql.replaceAll("(?i)\\s+ORDER\\s+BY\\s+", sqlFilter + " ORDER BY ");
+        } else {
             sql += sqlFilter;
-        }        
+        }*/
+        
+        /* VERSION 2 */
+        if(sqlSplt1[sqlSplt1.length - 1].toLowerCase().contains("group by") ||
+           sqlSplt2[0].toLowerCase().contains("group by")) {
+            sql = sql.replaceAll("(?i)\\s+GROUP\\s+BY\\s+", sqlFilter + " GROUP BY ");  
+        } else if(sqlSplt1[sqlSplt1.length - 1].toLowerCase().contains("order by") ||
+           sqlSplt2[0].toLowerCase().contains("order by")) {
+            sql = sql.replaceAll("(?i)\\s+ORDER\\s+BY\\s+", sqlFilter + " ORDER BY ");
+        } else {
+            sql += sqlFilter;
+        }
 
         return sql;
     }
@@ -760,6 +841,9 @@ public abstract class DAOBase implements IDAO {
         // Make some hacks
         stmt = stmt.replaceAll("=", " = ");
         stmt = stmt.replaceAll(",", " , ");
+        
+        // Replace table placeholder
+        stmt = stmt.replaceAll("@", getTableName());
         
         int fromIndex = 0;
         while(stmt.indexOf(":", fromIndex) != -1) {
@@ -801,17 +885,31 @@ public abstract class DAOBase implements IDAO {
     @Override
     public void setFilters(IFilter ... filtros) {
         this.filters.clear();
+        
+        // NEW
+        for (IFilter iFilter : filtros) {
+            if(iFilter instanceof AbstractFilterBase)
+                ((AbstractFilterBase)iFilter).injectDataSourceVariation(dataSourceContext.getDataSourceVariation());
+        }
+        
         this.filters.addAll(Arrays.asList(filtros));
     }
     
     @Override
     public void setFilters(List<IFilter> filtros) {
         this.filters.clear();
+        // NEW
+        for (IFilter iFilter : filtros) {
+            if(iFilter instanceof AbstractFilterBase)
+                ((AbstractFilterBase)iFilter).injectDataSourceVariation(dataSourceContext.getDataSourceVariation());
+        }
         this.filters.addAll(filtros);
     }
     
     @Override
     public void addFilter(IFilter filtro) {
+        if(filtro instanceof AbstractFilterBase)
+                ((AbstractFilterBase)filtro).injectDataSourceVariation(dataSourceContext.getDataSourceVariation());
         filters.add(filtro);
     }
 

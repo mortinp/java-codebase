@@ -4,12 +4,11 @@
  */
 package org.base.core.presentation.validation.components.samples;
 
-import org.base.core.presentation.validation.components.samples.AbstractComponentValidator;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
-import org.base.core.util.messages.MessageFactory;
+import org.base.utils.messages.MessageFactory;
  
 /**
  *
@@ -49,7 +48,7 @@ public class ValidatorDateConstrained extends AbstractComponentValidator {
             dateAgainst = agaistDateSource.toString();
         }
         if(!validateRangAgainst(objComponent, dateAgainst)) {
-            message = MessageFactory.getMessage("msg_rango_fecha_incorrecto", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_incorrect_date_range", objComponent.getName());
             return false;           
         }        
         return true;

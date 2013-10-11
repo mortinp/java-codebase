@@ -5,13 +5,12 @@
 package org.base.core.presentation.screens.extensions;
 
 import org.base.core.exceptions.DomainException;
-import org.base.core.presentation.screens.ScreenBase;
 
 /**
  *
  * @author mproenza
  */
-public abstract class AbstractModelEditor extends ScreenBase {
+public abstract class AbstractModelEditor extends DefaultOperationalScreen {
     
     protected boolean editionMode;
     protected int editingRow = -1;

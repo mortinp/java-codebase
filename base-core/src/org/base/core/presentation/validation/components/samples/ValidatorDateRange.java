@@ -4,15 +4,14 @@
  */
 package org.base.core.presentation.validation.components.samples;
 
-import org.base.core.presentation.validation.components.samples.AbstractComponentValidator;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
-import org.base.core.util.messages.MessageFactory;
-import org.base.core.util.types.UtilFunciones;
+import org.base.utils.messages.MessageFactory;
+import org.base.utils.types.UtilDates;
  
 /**
  *
@@ -79,18 +78,18 @@ public class ValidatorDateRange extends AbstractComponentValidator {
         
         if(!validateRang(((JTextComponent)objComponent).getText())) {
 
-            message = MessageFactory.getMessage("msg_rango_fecha_incorrecto", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_incorrect_date_range");
             return false;           
         }
         if (this.validaMes)
         if(!validateRangMes(((JTextComponent)objComponent).getText())) {
-            message = MessageFactory.getMessage("msg_rango_fecha_mes_mincorrecto", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_month_not_in_current_year", objComponent.getName());
             return false;           
         }
         
         if (this.validaAnno)
         if(!validateRangAnno(((JTextComponent)objComponent).getText())) {
-            message = MessageFactory.getMessage("msg_rango_fecha_anno_mincorrecto", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_year_is_not_current", objComponent.getName());
             return false;           
         }
 
@@ -139,8 +138,8 @@ public class ValidatorDateRange extends AbstractComponentValidator {
         boolean ok = true;
         
         String fechaInterna = ((JTextComponent)this.objComponentRange).getText();
-	Date fechaIni = UtilFunciones.getFecha(fechaInterna);
-        Date fechaFin = UtilFunciones.getFecha(fecha);
+	Date fechaIni = UtilDates.getDate(fechaInterna);
+        Date fechaFin = UtilDates.getDate(fecha);
         
         Calendar cal = GregorianCalendar.getInstance();
         Calendar ahoraCal = Calendar.getInstance();
@@ -164,8 +163,8 @@ public class ValidatorDateRange extends AbstractComponentValidator {
         boolean ok = true;
         
         String fechaInterna = ((JTextComponent)this.objComponentRange).getText();
-	Date fechaIni = UtilFunciones.getFecha(fechaInterna);
-        Date fechaFin = UtilFunciones.getFecha(fecha);
+	Date fechaIni = UtilDates.getDate(fechaInterna);
+        Date fechaFin = UtilDates.getDate(fecha);
         
         Calendar cal = GregorianCalendar.getInstance();
         Calendar ahoraCal = Calendar.getInstance();

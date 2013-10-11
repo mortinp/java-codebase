@@ -5,6 +5,7 @@
 package org.base.dao.exceptions;
 
 import java.sql.SQLException;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -13,6 +14,6 @@ import java.sql.SQLException;
 public class ExceptionDBDuplicateEntry extends SQLException {
 
     public ExceptionDBDuplicateEntry() {
-        super("La operación no puede realizarse.\n" + "Este objeto ya existe");
+        super(MessageFactory.getMessage("msg_duplicate_entry"));
     }
 }

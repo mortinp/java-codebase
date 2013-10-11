@@ -7,7 +7,8 @@ package org.base.dao;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.base.exceptions.system.SystemException;
+import org.base.dao.exceptions.ExceptionDBProgrammerMistake;
+import org.base.dao.exceptions.ExceptionDBUnknownError;
 
 /**
  *
@@ -18,7 +19,7 @@ public abstract class DAOFactory {
     private static IDAO objDAO;
     
     private static Properties propertiesFile = null;
-    private static final String DEFAULT_CONFIG_FILE_PATH = "org/base/core/config/objects_handlers.properties";
+    private static final String DEFAULT_CONFIG_FILE_PATH = "/META-INF/objects_handlers.properties";
 
     /**
      * Crea y devuelve el DAO.
@@ -30,15 +31,16 @@ public abstract class DAOFactory {
     public static IDAO getDAO(String alias) {
         try {
             if (propertiesFile == null) {
-                InputStream file = ClassLoader.getSystemResourceAsStream(DEFAULT_CONFIG_FILE_PATH);
+                InputStream file = DAOFactory.class.getResourceAsStream(DEFAULT_CONFIG_FILE_PATH);
                 propertiesFile = new Properties();
                 propertiesFile.load(file);
             }
             return getInstanceForName(alias);
         } catch (IOException ex) {
-            throw new SystemException(ex);
+            throw new ExceptionDBProgrammerMistake(ex);
         } catch (Exception ex) {
-            throw new SystemException(ex);
+            DAOPackage.log(ex);
+            throw new ExceptionDBUnknownError(ex);
         }
     }
 
@@ -49,10 +51,10 @@ public abstract class DAOFactory {
         if (strClassName != null && !strClassName.isEmpty()) {//try to create custom DAO class
             Class clazz = Class.forName(strClassName);
             if(clazz == null)
-                throw new SystemException("Could not create DAO for class " + strClassName + ": class does not exist");
+                throw new ExceptionDBProgrammerMistake("Could not create DAO for class " + strClassName + ": class does not exist");
             objDAO = (IDAO) clazz.newInstance();
             if(objDAO == null)
-                throw new SystemException("Could not create DAO for class " + strClassName);
+                throw new ExceptionDBProgrammerMistake("Could not create DAO for class " + strClassName);
             noCorrectConfigFound = false;
         } else {//try to create DAO from metadata
             String metadataFilePath = propertiesFile.getProperty(alias + "_mapping");
@@ -62,7 +64,7 @@ public abstract class DAOFactory {
             }
         }
         
-        if(noCorrectConfigFound) throw new SystemException("Configuration for DAO ('" + alias + "') was not found ... check configuration file(s)");
+        if(noCorrectConfigFound) throw new ExceptionDBProgrammerMistake("Configuration for DAO ('" + alias + "') was not found ... check configuration file(s)");
         return objDAO;
     }
 

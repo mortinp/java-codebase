@@ -4,10 +4,9 @@
  */
 package org.base.core.presentation.validation.components.samples;
 
-import org.base.core.presentation.validation.components.samples.AbstractComponentValidator;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
-import org.base.core.util.messages.MessageFactory;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -29,7 +28,7 @@ public class ValidatorDecimalNumber extends AbstractComponentValidator {
     public boolean validateComponent(JComponent objComponent) {
         if(((JTextComponent)objComponent).getText().isEmpty() || //if it is empty, then it is valid. Emptyness should be checked with another validator
             !((JTextComponent)objComponent).getText().matches(regex)) {
-            message = MessageFactory.getMessage("msg_campo_formato_incorrecto", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_value_incorrect_format", objComponent.getName());
             return false;           
         }
         return true;

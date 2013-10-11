@@ -14,7 +14,15 @@ import org.base.core.exceptions.DomainException;
 public abstract class TableModelEditor extends AbstractModelEditor {
 
     protected ITableModelChangeReceiver receiver;
-
+    
+    public TableModelEditor() {
+        super();
+    }
+    
+    public TableModelEditor(String title) {
+        super(title);
+    }
+    
     public TableModelEditor(ITableModelChangeReceiver receiver) {
         super();
         this.receiver = receiver;
@@ -24,6 +32,10 @@ public abstract class TableModelEditor extends AbstractModelEditor {
         super(title);
         this.receiver = receiver;
     }
+    
+    public void setReceiver(ITableModelChangeReceiver receiver) {
+        this.receiver = receiver;
+    }       
     
     @Override
     protected void sendToReceiver(Object model) throws DomainException {

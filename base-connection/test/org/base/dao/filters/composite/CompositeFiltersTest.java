@@ -7,6 +7,7 @@ package org.base.dao.filters.composite;
 import java.text.Format;
 import java.util.Date;
 import junit.framework.TestCase;
+import org.base.dao.DAOUtils;
 import org.base.dao.filters.FilterBase;
 import org.base.dao.filters.FilterBetween;
 import org.base.dao.filters.IFilter;
@@ -67,7 +68,7 @@ public class CompositeFiltersTest extends TestCase {
         //setup
         Date d1 = new Date(1000);
         Date d2 = new Date();
-        Format sdf = FilterBase.getDateFormatter();
+        Format sdf = DAOUtils.getDateFormatter();
         String sd1 = sdf.format(d1);
         String sd2 = sdf.format(d2);
 

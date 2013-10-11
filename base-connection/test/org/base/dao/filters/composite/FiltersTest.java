@@ -7,11 +7,11 @@ package org.base.dao.filters.composite;
 import java.text.Format;
 import java.util.Date;
 import junit.framework.TestCase;
+import org.base.dao.DAOUtils;
 import org.base.dao.datasources.connections.ConnectionPoolJDBC;
 import org.base.dao.datasources.context.DataSourceContext;
 import org.base.dao.datasources.context.IDataSourceContextInjectable;
 import org.base.dao.datasources.variations.VariationPostgresql;
-import org.base.dao.filters.FilterBase;
 import org.base.dao.filters.FilterBetween;
 import org.base.dao.filters.FilterDateExtract;
 import org.base.dao.filters.FilterMatchExistence;
@@ -28,7 +28,7 @@ public class FiltersTest extends TestCase {
         //setup dates
         Date d1 = new Date(1000);
         Date d2 = new Date();
-        Format sdf = FilterBase.getDateFormatter();
+        Format sdf = DAOUtils.getDateFormatter();
         String sd1 = sdf.format(d1);
         String sd2 = sdf.format(d2);
         

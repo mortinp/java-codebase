@@ -6,7 +6,7 @@ package org.base.core.presentation.validation.components.samples;
 
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
-import org.base.core.util.messages.MessageFactory;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -22,7 +22,7 @@ public class ValidatorEmptyText extends AbstractComponentValidator {
     @Override
     public boolean validateComponent(JComponent objComponent) {
         if(((JTextComponent)objComponent).getText().trim().isEmpty()) {            
-            message = MessageFactory.getMessage("msg_campo_obligatorio_vacio", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_mandatory_but_empty", objComponent.getName());
             return false;           
         }
         return true;

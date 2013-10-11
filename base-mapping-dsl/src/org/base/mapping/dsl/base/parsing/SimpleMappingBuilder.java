@@ -6,7 +6,9 @@ package org.base.mapping.dsl.base.parsing;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.base.mapping.dsl.base.MappingDefinition;
 import org.base.mapping.dsl.base.MappingEntry;
+import org.base.mapping.dsl.base.exceptions.ExceptionMapping;
+import org.base.mapping.dsl.base.parsing.inference.TypesInferreer;
 
 /**
  *
@@ -95,17 +99,17 @@ public class SimpleMappingBuilder implements IMappingBuilder {
             List<MappingEntry> entries = mappingDef.getEntries();
             fillObjectFromEntries(obj, entries, mapFieldsValues);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ExceptionMapping(ex);
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ExceptionMapping(ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ExceptionMapping(ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ExceptionMapping(ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ExceptionMapping(ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ExceptionMapping(ex);
         }
         
         return obj;
@@ -138,6 +142,7 @@ public class SimpleMappingBuilder implements IMappingBuilder {
     }
     
     public static void fillObjectFromEntries(Object obj, List<MappingEntry> entries, Map<String, Object> mapFieldsValues) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        int i=0;
         for (MappingEntry entry : entries) {
             String accessorName = entry.getAccessorName();
             String fieldName = entry.getTargetFieldName();
@@ -145,8 +150,35 @@ public class SimpleMappingBuilder implements IMappingBuilder {
             else if(accessorName.startsWith("is")) accessorName = accessorName.substring(2);
             String setAccessorName = "set" + accessorName;
 
-            Object value = mapFieldsValues.get(fieldName);
+            Object value = null;
+            if(mapFieldsValues.containsKey(fieldName)) value = mapFieldsValues.get(fieldName);
+            else {
+                Object [] a = mapFieldsValues.keySet().toArray();
+                value = mapFieldsValues.get((String)a[i]);
+            }
+            i++;
+            
+            // Sanity check
+            if(value == null) {
+                
+                /* Version 1: Try to set default value */
+                /*try {
+                    String getMethodName = "get" + accessorName;
+                    Method m = obj.getClass().getMethod(getMethodName);
+                    value = getDefaultFor(m.getReturnType());
+                } catch (NoSuchMethodException ex) {
+                    throw new ExceptionMapping(ex);
+                }*/
+                
+                /* Version 2: don't do anything */
+                continue;
+                
+                /* Version 3: throw error */
+                //throw new ExceptionMapping("Found null value for database field '" + fieldName +  "'. Could not map.");
+            }
+            
             Class parameterClass = value.getClass();
+            Class inferAsType = value.getClass();
             Method method = null;
             try {
                 method = obj.getClass().getMethod(setAccessorName, parameterClass);
@@ -164,12 +196,43 @@ public class SimpleMappingBuilder implements IMappingBuilder {
                         method = obj.getClass().getMethod(setAccessorName, Double.TYPE);
                     } else if(parameterClass == java.sql.Date.class) {
                         method = obj.getClass().getMethod(setAccessorName, java.util.Date.class);
+                    } else {
+                        // Try with the return type of the get method
+                        String getter = "get" + accessorName;
+                        Method g = obj.getClass().getMethod(getter);
+                        Class c = g.getReturnType();
+                        
+                        method = obj.getClass().getMethod(setAccessorName, c);
+                        
+                        inferAsType = c;
                     }
                 } catch (NoSuchMethodException ex1) {
-                    Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex1);
+                    try {
+                        // Try with the return type of the get method
+                        String getter = "get" + accessorName;
+                        Method g = obj.getClass().getMethod(getter);
+                        Class c = g.getReturnType();
+
+                        method = obj.getClass().getMethod(setAccessorName, c);
+
+                        inferAsType = c;
+                    } catch (NoSuchMethodException ex2) {
+                        // TODO: Throw error???
+                        Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex2);
+                    } catch (SecurityException ex2) {
+                        // TODO: Throw error???
+                        Logger.getLogger(SimpleMappingBuilder.class.getName()).log(Level.SEVERE, null, ex2);
+                    }
                 }
             }
-            method.invoke(obj, value);
+            
+            if(method != null) {
+                if(!inferAsType.getName().equalsIgnoreCase(parameterClass.getName())) {
+                    if("java.util.Date".equals(inferAsType.getName())) method.invoke(obj, TypesInferreer.inferDate(value));
+                    else if(inferAsType.isInstance(BigDecimal.class) || "java.math.BigDecimal".equals(inferAsType.getName())) method.invoke(obj, TypesInferreer.inferBigDecimal(value));
+                    else if(inferAsType.isInstance(Float.class) || "float".equals(inferAsType.getName())) method.invoke(obj, TypesInferreer.inferFloat(value));
+                } else  method.invoke(obj, value);
+            }
         }
     }
     
@@ -221,4 +284,51 @@ public class SimpleMappingBuilder implements IMappingBuilder {
         
         return value;
     }
+    
+    
+    // <editor-fold defaultstate="collapsed" desc="GETS FOR DEFAULTS">
+    private static Object getDefaultObject() {
+        return null;
+    }
+
+    private static boolean getDefaultBoolean() {
+        return false;
+    }
+
+    private static Float getDefaultFloat() {
+        return 0.0f;
+    }
+    
+    private static Double getDefaultDouble() {
+        return 0.0;
+    }
+    
+    private static Integer getDefaultInteger() {
+        return 0;
+    }
+    
+    private static Long getDefaultLong() {
+        return new Long(0);
+    }
+
+    private static String getDefaultString() {
+        return "";
+    }
+
+    private static Date getDefaultDate() {
+        return new Date();
+    }
+    
+    private static Object getDefaultFor(Class clazz) {
+        if(clazz == Double.class) return getDefaultDouble();
+        else if(clazz == Float.class) return getDefaultFloat();
+        else if(clazz == Boolean.class) return getDefaultBoolean();
+        else if(clazz == String.class) return getDefaultString();
+        else if(clazz == Date.class) return getDefaultDate();
+        else if(clazz == Integer.class) return getDefaultInteger();
+        else getDefaultObject();
+
+        return 0;
+    }
+    // </editor-fold>
 }

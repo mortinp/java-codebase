@@ -6,7 +6,6 @@ package org.base.core.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.base.exceptions.system.SystemException;
 
 /**
  *
@@ -34,10 +33,8 @@ public class RegistryEntityManager {
         IEntityManager mgr = entityMgrMap.get(entityMgrName);
         if(mgr == null) {
             //TODO: Write in log, not in output stream.
-            System.out.println("Core Info: No Entity Manager configured for '" + entityMgrName +  "' - Using default Entity Manager");
+            //System.out.println("Core Info: No Entity Manager configured for '" + entityMgrName +  "' - Using default Entity Manager");
             mgr = new EntityManager(entityMgrName) ;
-            
-            //throw new SystemException("No Entity Manager configured as '" + entityMgrName +  "'");
         }
         return mgr;
     }

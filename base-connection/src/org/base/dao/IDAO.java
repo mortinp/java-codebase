@@ -3,7 +3,7 @@ package org.base.dao;
 import java.util.List;
 import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
 import org.base.dao.exceptions.ExceptionDBEntryNotFound;
-import org.base.dao.exceptions.ExceptionDBForeignKey;
+import org.base.dao.exceptions.ExceptionDBEntryReferencedElsewhere;
 import org.base.dao.filters.IFilter;
 
 /**
@@ -16,13 +16,13 @@ public interface IDAO {
     
     public void insert(List lstModelos) throws ExceptionDBDuplicateEntry;
 
-    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey, ExceptionDBDuplicateEntry;
+    public void update(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere, ExceptionDBDuplicateEntry;
     
-    public void update(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey;
+    public void update(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere;
 
-    public void remove(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey;
+    public void remove(Object objModelo) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere;
     
-    public void remove(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBForeignKey;
+    public void remove(List lstModelos) throws ExceptionDBEntryNotFound, ExceptionDBEntryReferencedElsewhere;
     
     public Object findOne(Object valorLlave);
     

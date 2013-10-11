@@ -1,7 +1,0 @@
--Tengo que probar si se pueden insertar fechas sin especificar el tipo de dato explicitamente (java.sql.Types.DATE). Si no se puede, entonces en la adicion de parametros al pstm voy a tener que verificar el tipo de dato del parametro.
-
--La InterfaceDAO no deberia declarar ningun metodo que se le pase una Connection; esto hace que se sepan cosas de la implementacion (ej. que se usa JDBC). Lo que hay que hacer es abstraer totalmente al usuario de esto.
-
-Lo mejor es tener una clase que se encargue de administrar las conexiones (pool): ConexionJDBC. Esta clase es la que tiene que controlar el uso de las conexiones. GeneralDAO siempre deberia pedir una conexion, y ConexionJDBC le entrega una dependiendo del estado de la transaccion: si hay una transaccion en ejecucion, entonces le entrega la conexion que se esta usando, de lo contrario, le entrega una nueva. Tengo que ver como hago esto, pero si se que las transacciones tengo que moverlas para ConexionJDBC.
-
-Lo malo de este enfoque es que entonces solo se podria realizar una transaccion a la vez, pues todas las conexiones que se pidan en una misma transaccion, va a ser la misma que se esta usando en la transaccion actual.

@@ -5,6 +5,7 @@
 package org.base.core.presentation.util;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -18,7 +19,7 @@ public class ViewUtils {
     
     public static void arrangeTableColumns(JTable jTable) {
         TableMO modelo = (TableMO)jTable.getModel();
-        ArrayList lstLongitudes = modelo.getColumnsWidths();
+        List lstLongitudes = modelo.getColumnsWidths();
         
         arrangeTableColumns(jTable, lstLongitudes);
 
@@ -34,7 +35,7 @@ public class ViewUtils {
         }*/
     }
     //yoel
-    public static void arrangeTableColumns(JTable jTable,ArrayList lstLongitudes) {
+    public static void arrangeTableColumns(JTable jTable,List lstLongitudes) {
         TableMO modelo = (TableMO)jTable.getModel();
         if (lstLongitudes != null) {
 

@@ -6,24 +6,24 @@ package org.base.core.presentation.validation.components.samples;
 
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
-import org.base.core.util.messages.MessageFactory;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
  * @author martin
  */
 public class ValidatorFixedNumberOfChars extends AbstractComponentValidator {
-    private int numberOfDigits;
+    private int numberOfChars;
 
     public ValidatorFixedNumberOfChars(int numberOfDigits) {
-        this.numberOfDigits = numberOfDigits;
+        this.numberOfChars = numberOfDigits;
     }
 
     //should be passed a JTextComponent
     @Override
     public boolean validateComponent(JComponent objComponent) {
-        if (((JTextComponent)objComponent).getText().trim().length() != numberOfDigits) {
-            message = MessageFactory.getMessage("msg_campo_numerico_longitud_incorrecta", objComponent.getName(), numberOfDigits);
+        if (((JTextComponent)objComponent).getText().trim().length() != numberOfChars) {
+            message = MessageFactory.getMessage("msg_validator_value_incorrect_length", objComponent.getName(), numberOfChars);
             return false;
         }
         return true;

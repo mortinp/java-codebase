@@ -4,6 +4,8 @@
  */
 package org.base.dao.filters;
 
+import org.base.dao.DAOUtils;
+
 /**
  *
  * @author mproenza
@@ -51,7 +53,7 @@ public class FilterDateExtract extends FilterBase {
 
     @Override
     public String getFilterExpression() {
-        String strValue = formatValue(this.value);
+        String strValue = DAOUtils.formatValueForQuery(this.value);
         return "EXTRACT(" + extract + ", " + fieldName + ")" + this.operator + strValue;
     }
 }

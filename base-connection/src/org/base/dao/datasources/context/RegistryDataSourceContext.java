@@ -6,7 +6,7 @@ package org.base.dao.datasources.context;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.base.exceptions.system.SystemException;
+import org.base.dao.exceptions.ExceptionDBProgrammerMistake;
 
 /**
  *
@@ -21,7 +21,7 @@ public class RegistryDataSourceContext {
     
     public static DataSourceContext getDataSourceContext(String dsCtxtName) {
         DataSourceContext dsContext = dsContextMap.get(dsCtxtName);
-        if(dsContext == null) throw new SystemException("No Datasource Context configured as '" + dsCtxtName +  "'");
+        if(dsContext == null) throw new ExceptionDBProgrammerMistake("No datasource context configured as '" + dsCtxtName +  "'");
         return dsContext;
     }
 }

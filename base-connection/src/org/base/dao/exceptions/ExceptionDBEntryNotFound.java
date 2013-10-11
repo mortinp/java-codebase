@@ -5,6 +5,7 @@
 package org.base.dao.exceptions;
 
 import java.sql.SQLException;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -13,6 +14,6 @@ import java.sql.SQLException;
 public class ExceptionDBEntryNotFound extends SQLException {
 
     public ExceptionDBEntryNotFound() {
-        super("Este objeto no existe en la BD.");        
+        super(MessageFactory.getMessage("msg_entry_not_found"));        
     }
 }

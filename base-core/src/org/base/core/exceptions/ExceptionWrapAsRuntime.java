@@ -47,4 +47,9 @@ public class ExceptionWrapAsRuntime extends RuntimeException {
     }
     
     public void rethrow() throws Exception { throw originalException; }
+    
+    @Override
+    public String getMessage() {
+        return originalException.getMessage();
+    }
 }

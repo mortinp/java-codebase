@@ -9,6 +9,9 @@ import java.util.logging.Logger;
 import javax.swing.JTable;
 import org.base.core.delegates.ITableModelChangeReceiver;
 import org.base.core.exceptions.DomainException;
+import org.base.core.presentation.screens.ScreenBase;
+import org.base.core.domain.extensions.ICrudVerifiable;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -27,6 +30,10 @@ public class CommandDeleteTableRow extends CommandDoStuffWithTableRow {
     @Override
     protected void doStuff(int rowIndex, Object obj) {
         try {
+            if(obj instanceof ICrudVerifiable  && !((ICrudVerifiable)obj).isDeletable()) {
+                ScreenBase.showWarningMessage(MessageFactory.getMessage("msg_verification_object_not_deletable", obj.toString()));
+                return;
+            } 
             receiver.deleteModel(rowIndex);
         } catch (DomainException ex) {
             Logger.getLogger(CommandDeleteTableRow.class.getName()).log(Level.SEVERE, null, ex);

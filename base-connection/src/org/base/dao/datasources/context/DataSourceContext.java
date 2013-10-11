@@ -5,9 +5,14 @@
 package org.base.dao.datasources.context;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import org.base.dao.datasources.connections.AbstractConnectionPool;
 import org.base.dao.datasources.variations.IDataSourceVariation;
+import org.base.dao.exceptions.ExceptionDBBackupError;
+import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
+import org.base.dao.exceptions.ExceptionDBEntryReferencedElsewhere;
+import org.base.dao.exceptions.ExceptionDBRestoreError;
 
 /**
  *
@@ -16,6 +21,10 @@ import org.base.dao.datasources.variations.IDataSourceVariation;
 public class DataSourceContext {
     private AbstractConnectionPool connectionPool;
     private IDataSourceVariation dataSourceVariation;
+
+    public IDataSourceVariation getDataSourceVariation() {
+        return dataSourceVariation;
+    }
     
     public DataSourceContext(AbstractConnectionPool connectionPool, IDataSourceVariation dataSourceVariation) {
         this.connectionPool = connectionPool;
@@ -27,6 +36,18 @@ public class DataSourceContext {
      */
     public String getDBObjectExpression(String objectName) {
         return dataSourceVariation.getDBObjectExpression(objectName);
+    }
+    
+    public void manageDBException(SQLException ex) throws ExceptionDBDuplicateEntry, ExceptionDBEntryReferencedElsewhere {
+        dataSourceVariation.manageException(ex);
+    }
+    
+    public void backup(String path) throws ExceptionDBBackupError {
+        dataSourceVariation.backup(connectionPool, path);
+    }
+    
+    public void restore(String path) throws ExceptionDBRestoreError {
+        dataSourceVariation.restore(connectionPool, path);
     }
     
     /*

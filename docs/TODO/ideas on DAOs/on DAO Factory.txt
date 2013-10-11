@@ -1,3 +1,0 @@
-El uso de una Factory para los DAOs es algo conveniente, pues si toda la aplicacion accede a los DAOs a traves de los metodos de la factory, entonces solo cambiando la instancia que esta retorna de cada tipo, se cambia en toda la aplicacion. Esto es conveniente si queremos cambiar en toda la aplicacion los DAOs que usamos para cada objeto del dominio.
-
-El problema es hacer que los programadores usen esto obligatoriamente, o sea, que el unico modo de acceso a los objetos DAO sea a traves de la Factory. En java se puede hacer haciendo las clases protegidas, lo que hace que solo tengan visibilidad dentro del mismo paquete.

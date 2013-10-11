@@ -1,3 +1,0 @@
--Los campos que se muestran en las tablas a veces necesitamos que salgan formateados de cierta manera. Por ejemplo, las fechas quisieramos que se formatearan de la forma dd-MM-yyyy. Creo que una forma de lograr esto es estableciendo formateadores para cada tipo de dato en cada TableMO, y hacer que el parser use estos formateadores antes de devolver el valor. DONE.
-
-IDEA MEJOR: Estos formatters se podrian configurar fuera de la aplicacion, en algun fichero.

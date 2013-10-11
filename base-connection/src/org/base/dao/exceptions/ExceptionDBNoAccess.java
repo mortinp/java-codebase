@@ -5,6 +5,7 @@
 package org.base.dao.exceptions;
 
 import java.sql.SQLException;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -13,6 +14,6 @@ import java.sql.SQLException;
 public class ExceptionDBNoAccess extends SQLException {
 
     public ExceptionDBNoAccess() {
-        super("No se pudo establecer la conexión con la base de datos.\nVerifique que el servicio se está ejecutando e inténtelo de nuevo.");
+        super(MessageFactory.getMessage("msg_no_db_access"));
     }
 }

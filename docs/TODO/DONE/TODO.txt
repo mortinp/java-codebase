@@ -1,5 +1,0 @@
--Con el CoreConfigBinder se puede configurar tambien el path para los reportes, y no haria falta el TareaMostrarReporteGateway.DONE.
-
--FIX: En el metodo obtenerResultadoSentencia(PreparedStatement pstm, Connection conn) se esta retornando el result set, pero se cierra el pstm. Esto hace que tambien se cierre el result set, imposibilitando su uso. El cierre del pstm se deberia mover para el metodo donde se usa el result set. Pero esto hace que, como este metodo se puede usar desde el exterior (ej. una clase que herede de GeneralDAO), entonces el manejo de las excepciones se debe ejecutar tambien en el exterior. Lo mejor al final es tener un objeto estrategia para construir el objeto a partir del result set (?).DONE.
-
--El metodo crearListaResultados(ResultSet rs) de GeneralDAO lanza una SQLException. Esto hace que el metodo de afuera sea el que tiene que manejar la excepcion que se genero mientras se creaba el objeto. Seria mejor que esta excepcion la manejara la misma funcion, y lanzara una SistemaExcepcion en caso de error.DONE.

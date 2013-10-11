@@ -80,4 +80,12 @@ public class ConnectionPoolJDBC extends AbstractConnectionPool {
         }
         return url;
     }
+    
+    @Override
+    public String getDBName() {
+        String db = getUrl();
+        String[] ds_split = db.split("/");
+        String dbname = ds_split[3];
+        return dbname;
+    }
 }

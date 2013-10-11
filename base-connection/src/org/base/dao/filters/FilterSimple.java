@@ -4,6 +4,8 @@
  */
 package org.base.dao.filters;
 
+import org.base.dao.DAOUtils;
+
 /**
  *
  * @author mproenza
@@ -38,7 +40,8 @@ public class FilterSimple extends FilterBase {
 
     @Override
     public String getFilterExpression() {
-        String strValue = formatValue(this.value);
-        return fieldName + this.operator + strValue;
+        String strValue = DAOUtils.formatValueForQuery(
+                dataSourceVariation.getReplaceValue(value));
+        return fieldName + operator + strValue;
     }
 }

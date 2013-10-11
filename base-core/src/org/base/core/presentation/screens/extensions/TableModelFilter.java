@@ -17,10 +17,17 @@ import org.base.core.presentation.screens.ScreenBase;
  */
 public class TableModelFilter extends ScreenBase {
 
+    protected JTable table;
     protected TableMO entityTableModel;
     protected TableRowSorter<TableModel> tableModelRowSorter;
-    
-    protected JTable table;
+
+    public TableModelFilter(String title) {
+        super(title);
+    }
+
+    public TableModelFilter() {
+        super();
+    }
 
     public void setTable(JTable table) {
         this.table = table;

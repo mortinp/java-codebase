@@ -8,15 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import org.base.dao.DAOFactory;
 import org.base.dao.IDAO;
-import org.base.exceptions.system.SystemException;
 import org.base.dao.filters.IFilter;
 import org.base.components.models.ComboBoxMO;
 import org.base.components.models.TableMO;
 import org.base.components.models.parsing.DefaultTableModelDataExtractor;
+import org.base.utils.exceptions.ExceptionProgrammerMistake;
+import org.base.utils.exceptions.ExceptionUnknownError;
 
 /**
  *
@@ -26,7 +28,7 @@ public class ViewModelUtils {
 
     // <editor-fold defaultstate="collapsed" desc="DECLARACION DE VARIABLES">
     
-    private static final String DEFAULT_CONFIG_FILE_PATH = "org/base/core/config/models_views.properties";
+    private static final String DEFAULT_CONFIG_FILE_PATH = "/META-INF/models_views.properties";
     private static Properties propertiesFile = null;
     
     static class TableViewConfig {
@@ -52,29 +54,18 @@ public class ViewModelUtils {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="METODOS DE SERVICIO">
-    public static ComboBoxMO fillComboboxModel(String nomenclador) {
+    public static ComboBoxMO fillComboboxModel(String entityAlias) {
         ComboBoxMO modelo = new ComboBoxMO();
-        List lstLista = getDAO(nomenclador).findAll();
+        List lstLista = getDAO(entityAlias).findAll();
         for (Object object : lstLista) {
             modelo.addElement(object);
         }
         return modelo;
     }
     
-    /*public static ComboBoxMO fillComboboxModel(String nomenclador, List<IFilter> listaFiltros) {
+    public static ComboBoxMO fillComboboxModel(String entityAlias, IFilter ... listaFiltros) {
         ComboBoxMO modelo = new ComboBoxMO();
-        InterfaceDAO objDao = getDAO(nomenclador);
-        objDao.setFilters(listaFiltros);  
-        ArrayList lstLista = objDao.findAll();
-        for (Object object : lstLista) {
-            modelo.addElement(object);
-        }
-        return modelo;
-    }*/
-    
-    public static ComboBoxMO fillComboboxModel(String nomenclador, IFilter ... listaFiltros) {
-        ComboBoxMO modelo = new ComboBoxMO();
-        IDAO objDao = getDAO(nomenclador);
+        IDAO objDao = getDAO(entityAlias);
         objDao.setFilters(listaFiltros);  
         List lstLista = objDao.findAll();
         for (Object object : lstLista) {
@@ -83,33 +74,64 @@ public class ViewModelUtils {
         return modelo;
     }
 
-    public static TableMO fillTableModel(String nomenclador) {
-        TableViewConfig objConfigTabla = getTableViewConfig(nomenclador);     
+    public static TableMO fillTableModel(String entityAlias) {
+        List lstLista = getDAO(entityAlias).findAll();
+        return createTableModel(entityAlias, lstLista);
+        
+        /*TableViewConfig objConfigTabla = getTableViewConfig(nomenclador);     
         TableMO modelo = getTableModelFromConfig(objConfigTabla);
-
-        List lstLista = getDAO(nomenclador).findAll();
         modelo.setRowObjects(lstLista);
 
-        return modelo;
+        return modelo;*/
     }
     
-    public static TableMO fillTableModel(String nomenclador, List<IFilter> listaFiltros) {        
-        TableViewConfig objConfigTabla = getTableViewConfig(nomenclador);       
-        TableMO modelo = getTableModelFromConfig(objConfigTabla);      
-
-        IDAO objDao = getDAO(nomenclador);
+    public static TableMO fillTableModel(String entityAlias, List<IFilter> listaFiltros) { 
+        IDAO objDao = getDAO(entityAlias);
         objDao.setFilters(listaFiltros);        
         List lstLista = objDao.findAll();
+        return createTableModel(entityAlias, lstLista);
+        
+        /*TableViewConfig objConfigTabla = getTableViewConfig(nomenclador);       
+        TableMO modelo = getTableModelFromConfig(objConfigTabla);          
         modelo.setRowObjects(lstLista);
+
+        return modelo;*/
+    }
+    
+    public static TableMO fillTableModel(String entityAlias, Map<String, Object> params) {
+        List lstLista = getDAO(entityAlias).findAll();
+        return createTableModel(entityAlias, lstLista, params);
+        
+        /*TableViewConfig objConfigTabla = getTableViewConfig(nomenclador);     
+        TableMO modelo = getTableModelFromConfig(objConfigTabla, params);        
+        modelo.setRowObjects(lstLista);
+
+        return modelo;*/
+    }
+    
+    public static TableMO createTableModel(String entityAlias, List rowObjects) {
+        TableViewConfig objConfigTabla = getTableViewConfig(entityAlias);     
+        TableMO modelo = getTableModelFromConfig(objConfigTabla);
+
+        modelo.setRowObjects(rowObjects);
 
         return modelo;
     }
     
-    public static TableMO fillTableModel(String nomenclador, IFilter ... listaFiltros) {
-        TableViewConfig objConfigTabla = getTableViewConfig(nomenclador);      
+    public static TableMO createTableModel(String entityAlias, List rowObjects, Map<String, Object> params) {
+        TableViewConfig objConfigTabla = getTableViewConfig(entityAlias);     
+        TableMO modelo = getTableModelFromConfig(objConfigTabla, params);
+
+        modelo.setRowObjects(rowObjects);
+
+        return modelo;
+    }
+    
+    public static TableMO fillTableModel(String entityAlias, IFilter ... listaFiltros) {
+        TableViewConfig objConfigTabla = getTableViewConfig(entityAlias);      
         TableMO modelo = getTableModelFromConfig(objConfigTabla);
         
-        IDAO objDao = getDAO(nomenclador);
+        IDAO objDao = getDAO(entityAlias);
         objDao.setFilters(listaFiltros);        
         List lstLista = objDao.findAll();
         modelo.setRowObjects(lstLista);
@@ -117,12 +139,24 @@ public class ViewModelUtils {
         return modelo;
     }
 
-    public static TableMO getEmptyTableModel(String strNombreTabla) {
-        TableViewConfig objConfigTabla = getTableViewConfig(strNombreTabla);        
+    public static TableMO getEmptyTableModel(String entityAlias) {
+        TableViewConfig objConfigTabla = getTableViewConfig(entityAlias);        
         return getTableModelFromConfig(objConfigTabla);        
     }
     
-    public static TableMO createTableModel(List listaModelos, List<ColumnaGrid> listaColumnas) throws SystemException {
+    public static TableMO getEmptyTableModel(String entityAlias, Map<String, Object> params) {
+        TableViewConfig objConfigTabla = getTableViewConfig(entityAlias);        
+        return getTableModelFromConfig(objConfigTabla, params);        
+    }
+    
+    public static TableMO createTableModel(List listaModelos, List<ColumnaGrid> listaColumnas) {
+        TableMO modelo = createTableModel(listaColumnas);
+        modelo.setRowObjects(listaModelos);
+
+        return modelo;
+    }
+    
+    public static TableMO createTableModel(List<ColumnaGrid> listaColumnas) {
         TableViewConfig objConfigTabla = new TableViewConfig();
         for (ColumnaGrid columnaGrid : listaColumnas) {
             objConfigTabla.listaColumnas.add(columnaGrid.descripcion);
@@ -132,19 +166,47 @@ public class ViewModelUtils {
         }        
 
         TableMO modelo = getTableModelFromConfig(objConfigTabla);
-        modelo.setRowObjects(listaModelos);
+
+        return modelo;
+    }
+    
+    public static TableMO createTableModel(List<ColumnaGrid> listaColumnas, Map<String, Object> params) {
+        TableViewConfig objConfigTabla = new TableViewConfig();
+        for (ColumnaGrid columnaGrid : listaColumnas) {
+            objConfigTabla.listaColumnas.add(columnaGrid.descripcion);
+            objConfigTabla.listaAtributos.add(columnaGrid.atributo);
+            objConfigTabla.listaTipos.add(columnaGrid.tipo);
+            objConfigTabla.listaLongitudes.add(columnaGrid.longitud);
+        }        
+
+        TableMO modelo = getTableModelFromConfig(objConfigTabla, params);
 
         return modelo;
     }
     // </editor-fold>    
 
     private static TableMO getTableModelFromConfig(TableViewConfig objConfigTabla) {
-        TableMO modelo = new TableMO(objConfigTabla.listaColumnas, objConfigTabla.listaLongitudes, 
-                                     new DefaultTableModelDataExtractor((ArrayList)objConfigTabla.listaTipos, (ArrayList)objConfigTabla.listaAtributos));
+        TableMO modelo = new TableMO(/*objConfigTabla.listaColumnas, objConfigTabla.listaLongitudes, */
+             new DefaultTableModelDataExtractor(
+                (ArrayList)objConfigTabla.listaColumnas, 
+                (ArrayList)objConfigTabla.listaTipos, 
+                (ArrayList)objConfigTabla.listaLongitudes,
+                (ArrayList)objConfigTabla.listaAtributos));
         return modelo;
     }
     
-    private static TableViewConfig getTableViewConfig(String strTabla) {
+    private static TableMO getTableModelFromConfig(TableViewConfig objConfigTabla, Map<String, Object> params) {
+        TableMO modelo = new TableMO(/*objConfigTabla.listaColumnas, objConfigTabla.listaLongitudes, */
+             new DefaultTableModelDataExtractor(
+                (ArrayList)objConfigTabla.listaColumnas, 
+                (ArrayList)objConfigTabla.listaTipos, 
+                (ArrayList)objConfigTabla.listaLongitudes,
+                (ArrayList)objConfigTabla.listaAtributos,
+                params));
+        return modelo;
+    }
+    
+    private static TableViewConfig getTableViewConfig(String entityAlias) {
         boolean noCorrectConfigFound = true;
         TableViewConfig objConfigTabla = null;
         
@@ -153,16 +215,16 @@ public class ViewModelUtils {
         List lstTipos = new ArrayList();
         List lstlongitudes = new ArrayList();
 
-        String strColumnas = getPropiedades().getProperty(strTabla + "_columns", "");
-        String strAtributos = getPropiedades().getProperty(strTabla + "_attributes", "");
-        String strTipos = getPropiedades().getProperty(strTabla + "_types", "");
-        String strLongitud = getPropiedades().getProperty(strTabla + "_colwidths", "");
+        String strColumnas = getPropiedades().getProperty(entityAlias + "_columns", "");
+        String strAtributos = getPropiedades().getProperty(entityAlias + "_attributes", "");
+        String strTipos = getPropiedades().getProperty(entityAlias + "_types", "");
+        String strLongitud = getPropiedades().getProperty(entityAlias + "_colwidths", "");
         
         if(strColumnas != null && !strColumnas.isEmpty()) {
             noCorrectConfigFound = false;
         }
         
-        if(noCorrectConfigFound) throw new SystemException("Configuration for table ('" + strTabla + "') was not found ... check configuration file(s)");
+        if(noCorrectConfigFound) throw new ExceptionProgrammerMistake("Configuration for table ('" + entityAlias + "') was not found ... check configuration file(s)");
 
         StringTokenizer st = new StringTokenizer(strColumnas, "|");
         while (st.hasMoreElements()) {
@@ -197,11 +259,11 @@ public class ViewModelUtils {
     private static Properties getPropiedades() {
         if (propertiesFile == null) {
             try {
-                InputStream objArchivo = ClassLoader.getSystemResourceAsStream(DEFAULT_CONFIG_FILE_PATH);
+                InputStream objArchivo = ViewModelUtils.class.getResourceAsStream(DEFAULT_CONFIG_FILE_PATH);
                 propertiesFile = new Properties();
                 propertiesFile.load(objArchivo);
             } catch (IOException ex) {
-                throw new SystemException(ex);
+                throw new ExceptionUnknownError(ex);
             }
         }
         return propertiesFile;

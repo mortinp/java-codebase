@@ -25,6 +25,6 @@ public abstract class DAOAggregated extends DAOBase {
     protected abstract String getParentRefFieldName();
     
     public List findByParent(Object valorID) {
-        return obtenerListaResultadoSentencia(getFindByParentStatement(), new Object[] {valorID});
+        return findMany(getFindByParentStatement(), new Object[] {valorID});
     }
 }

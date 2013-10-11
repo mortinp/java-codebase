@@ -4,7 +4,9 @@
  */
 package org.base.dao.filters;
 
-import org.base.exceptions.system.SystemException;
+import java.util.Date;
+import org.base.dao.DAOUtils;
+import org.base.dao.exceptions.ExceptionDBProgrammerMistake;
 
 /**
  *
@@ -17,22 +19,27 @@ public class FilterBetween extends FilterBase {
 
     public FilterBetween(String fieldName, Object bottomValue, Object topValue) {
         super(fieldName);
-        if(bottomValue == null || topValue == null) throw new SystemException("Null value unaccepted.");
+        if(bottomValue == null || topValue == null) throw new ExceptionDBProgrammerMistake("Null value not accepted.");
         this.bottomValue = bottomValue;
         this.topValue = topValue;
     }
 
     @Override
     public String getFilterExpression() {
-        String strValorDesde = null;
+        /*String strValorDesde = null;
         String strValorHasta = null;
         String strFiltro = null;
 
-        strValorDesde = formatValue(this.bottomValue);
-        strValorHasta = formatValue(this.topValue);
+        strValorDesde = DAOUtils.formatValueForQuery(this.bottomValue);
+        strValorHasta = DAOUtils.formatValueForQuery(this.topValue);
 
         strFiltro = strValorDesde + " AND " + strValorHasta;
-        return this.fieldName + " BETWEEN " + strFiltro;
+        return this.fieldName + " BETWEEN " + strFiltro;*/
+        
+        return dataSourceVariation.getBetweenExpression(
+                fieldName, 
+                /*DAOUtils.formatValueForQuery(*/this.bottomValue/*)*/,
+                /*DAOUtils.formatValueForQuery(*/this.topValue)/*)*/;
     }
     
 }

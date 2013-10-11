@@ -15,4 +15,8 @@ public interface ITableModelDataExtractor {
     
     public ArrayList<ArrayList> getDataMatrix(List lstDataObjects, int first, int last);    
     public ArrayList getDataArray(Object dataObject);
+    
+    public List getColumnNames();
+    public List getColumnTypes();
+    public List getColumnWidths();
 }

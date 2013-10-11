@@ -4,14 +4,13 @@
  */
 package org.base.core.presentation.validation.components.samples;
 
-import org.base.core.presentation.validation.components.samples.AbstractComponentValidator;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
-import org.base.core.util.messages.MessageFactory;
+import org.base.utils.messages.MessageFactory;
 
 /**
  *
@@ -46,13 +45,13 @@ public class ValidatorDate extends AbstractComponentValidator {
     public boolean validateComponent(JComponent objComponent) {
         
         if(!isDate(((JTextComponent)objComponent).getText())) {
-            message = MessageFactory.getMessage("msg_campo_formato_fecha_incorrecto", objComponent.getName());
+            message = MessageFactory.getMessage("msg_validator_incorrect_date_format", objComponent.getName());
             return false;           
         }
         if (this.valFechaActualMayor)
         {
             if(isDateMTToday(((JTextComponent)objComponent).getText())) {
-                message = MessageFactory.getMessage("msg_campo_fecha_mayor_actual", objComponent.getName());
+                message = MessageFactory.getMessage("msg_validator_date_bigger_than_today", objComponent.getName());
                 return false;           
             }
         }   

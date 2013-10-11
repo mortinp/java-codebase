@@ -5,9 +5,9 @@
 package org.base.core.dao;
 
 import org.base.core.domain.Model;
+import org.base.utils.exceptions.ExceptionProgrammerMistake;
 import org.base.dao.DAOBase;
 import org.base.dao.searches.IDataMappingStrategy;
-import org.base.exceptions.system.SystemException;
 
 /**
  *
@@ -20,9 +20,9 @@ public abstract class DAOModel extends DAOBase {
     }
     
     @Override
-    protected Object getKeyValueExpression(Object obj) {
+    public Object getKeyValueExpression(Object obj) {
         if(obj instanceof Model) return ((Model)obj).getKeyValueExpression();
-        throw new SystemException("Not able to find a key value expression. Try making your class implement '" + Model.class.getName() + "'");
+        throw new ExceptionProgrammerMistake("Not able to find a key value expression. Try making your class implement '" + Model.class.getName() + "'");
         
     }
     

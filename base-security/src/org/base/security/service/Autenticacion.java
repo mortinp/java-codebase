@@ -11,11 +11,15 @@ import java.security.AccessController;
 import java.security.Permission;
 import java.security.PrivilegedAction;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import org.base.core.presentation.screens.ScreenBase;
+import org.base.utils.messages.MessageFactory;
+import org.base.security.auth.config.AuthEntryPoint;
 
 public class Autenticacion {
 
@@ -70,6 +74,7 @@ public class Autenticacion {
 
         return (Boolean) Subject.doAsPrivileged(subj,new PrivilegedAction() {
 
+            @Override
             public Object run() {
                 try {
                     AccessController.checkPermission(perm);
@@ -119,10 +124,8 @@ public class Autenticacion {
                     break;
                 }
             } catch (DSecurityException e) {
-                JOptionPane.showMessageDialog(null, 
-                        "Ha ocurrido un error de conexión.\nPor favor, cierre la aplicación e inténtelo más tarde.", 
-                        "Aviso", JOptionPane.WARNING_MESSAGE);
-                //JOptionPane.showMessageDialog(null, e.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+                AuthEntryPoint.logger.log(Level.SEVERE, e.getMessage());
+                ScreenBase.showWarningMessage(MessageFactory.getMessage("msg_connection_not_established"));
             }
         }
         while (Autenticacion.passwordCaducada()) {

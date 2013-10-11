@@ -7,7 +7,7 @@ package org.base.core.commands;
 import javax.swing.JTable;
 import org.base.core.delegates.ITableModelChangeReceiver;
 import org.base.core.exceptions.DomainException;
-import org.base.exceptions.system.SystemException;
+import org.base.utils.exceptions.ExceptionUnknownError;
 
 /**
  *
@@ -35,7 +35,7 @@ public class CommandSendTableRow extends CommandDoStuffWithTableRow {
             if(mode == MODE_ADITION) receiver.addModel(obj);
             else if(mode == MODE_UPDATE) receiver.updateModel(rowIndex, obj);
         } catch (DomainException ex) {
-            throw new SystemException(ex);
+            throw new ExceptionUnknownError(ex);
         }
     }
 }

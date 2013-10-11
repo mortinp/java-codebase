@@ -44,14 +44,14 @@ public class ListenerEnableComponentOnTableRowSelection implements ListSelection
             if (this.components != null && !active) {
                 for (int i = 0; i < components.size(); i++) {
                     JComponent object = (JComponent) components.get(i);
-                    object.setEnabled(true);                    
+                    if(object != null)object.setEnabled(true);                    
                 }
                 active = true;
             }
         } else {
             for (int i = 0; i < components.size(); i++) {
                 JComponent object = (JComponent) components.get(i);
-                object.setEnabled(false);                
+                if(object != null)object.setEnabled(false);                
             }
             active = false;
         }

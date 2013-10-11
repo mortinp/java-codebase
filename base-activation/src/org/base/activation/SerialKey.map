@@ -1,0 +1,5 @@
+org.base.activation.SerialKey -> auth_serial_key {
+    id     : id @key @orderby @autonumeric
+    key    : key
+    userId : user_id
+}

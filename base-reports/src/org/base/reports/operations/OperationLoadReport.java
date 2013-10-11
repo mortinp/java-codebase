@@ -5,7 +5,6 @@
 package org.base.reports.operations;
 
 import java.awt.Container;
-import java.util.HashMap;
 import java.util.Map;
 import org.base.reports.Report;
 import org.base.reports.ReportViewer;
@@ -14,30 +13,21 @@ import org.base.reports.ReportViewer;
  *
  * @author mproenza
  */
-public class OperationLoadReport implements IReportingOperation {
-    private String strNombreReporte;
+public class OperationLoadReport extends AbstractReportingOperation {
     private Container container;
-    
-    private Map<String, Object> mapParametros = new HashMap<String, Object>();
 
-    public OperationLoadReport(Container container, String nombreReporte) {
+    public OperationLoadReport(Container container, String strNombreReporte) {
+        super(strNombreReporte);
         this.container = container;
-        this.strNombreReporte = nombreReporte;
     }
     
     public OperationLoadReport(Container container, String strNombreReporte, Map<String, Object> mapParametros) {
-        this(container, strNombreReporte);
-        this.mapParametros = mapParametros;
+        super(strNombreReporte, mapParametros);
+        this.container = container;
     }
 
     @Override
-    public Report execute() {
-        Report rep = new Report(); 
-        rep.setReportFileName(strNombreReporte + ".jasper");
-        
-        if(!mapParametros.isEmpty())
-            rep.setParameters(mapParametros);
+    public void doStuff(Report rep) {
         ReportViewer.loadInContainer(container, rep);
-        return rep;
     }
 }

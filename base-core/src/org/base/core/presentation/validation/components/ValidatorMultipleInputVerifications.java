@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
+import org.base.utils.exceptions.ExceptionProgrammerMistake;
+import org.base.utils.exceptions.ExceptionUnknownError;
 import org.base.core.presentation.validation.IValidator;
-import org.base.exceptions.system.SystemException;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.containers.TransientPicoContainer;
 import org.picocontainer.injectors.Reinjector;
@@ -59,9 +60,9 @@ public class ValidatorMultipleInputVerifications extends AbstractInputVerifier {
             Method method = validator.getClass().getMethod("injectComponent", JComponent.class);
             new Reinjector(pico).reinject(validator.getClass(), method);
         } catch (NoSuchMethodException ex) {
-            throw new SystemException(ex);
+            throw new ExceptionProgrammerMistake("Could not find method 'injectComponent' in your validator.");
         } catch (SecurityException ex) {
-            throw new SystemException(ex);
+            throw new ExceptionUnknownError(ex);
         }
     }
     

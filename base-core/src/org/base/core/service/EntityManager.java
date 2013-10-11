@@ -14,7 +14,7 @@ import org.base.dao.filters.IFilter;
 import org.base.core.exceptions.ExceptionWrapAsRuntime;
 import org.base.dao.exceptions.ExceptionDBDuplicateEntry;
 import org.base.dao.exceptions.ExceptionDBEntryNotFound;
-import org.base.dao.exceptions.ExceptionDBForeignKey;
+import org.base.dao.exceptions.ExceptionDBEntryReferencedElsewhere;
 
 /**
  *
@@ -38,7 +38,7 @@ public class EntityManager implements IEntityManager {
     public void insert(Object objModelo) {
         try {
             if (objModelo instanceof AutonumericModel && !(entityDAO instanceof DAOSimpleMetadataMapper)) {
-                int llave = ((DAOAutonumeric)entityDAO).insertarObtenerId(objModelo);
+                int llave = ((DAOAutonumeric)entityDAO).insertReturningId(objModelo);
                 ((AutonumericModel) objModelo).setKeyValue(llave);
             } else {
                 entityDAO.insert(objModelo);
@@ -53,7 +53,7 @@ public class EntityManager implements IEntityManager {
         try {
             entityDAO.update(objModelo);
             
-        } catch (ExceptionDBForeignKey ex) {
+        } catch (ExceptionDBEntryReferencedElsewhere ex) {
             throw new ExceptionWrapAsRuntime(ex);
         } catch (ExceptionDBEntryNotFound ex) {
             throw new ExceptionWrapAsRuntime(ex);
@@ -66,7 +66,7 @@ public class EntityManager implements IEntityManager {
     public void remove(Object objModelo) {
         try {
             entityDAO.remove(objModelo);
-        } catch (ExceptionDBForeignKey ex) {
+        } catch (ExceptionDBEntryReferencedElsewhere ex) {
             throw new ExceptionWrapAsRuntime(ex);
         } catch (ExceptionDBEntryNotFound ex) {
             throw new ExceptionWrapAsRuntime(ex);

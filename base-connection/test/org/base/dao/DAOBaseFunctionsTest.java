@@ -8,6 +8,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 import org.base.dao.datasources.connections.ConnectionPoolJDBC;
 import org.base.dao.datasources.context.DataSourceContext;
+import org.base.dao.datasources.context.DataSourceTemplateFactory;
 import org.base.dao.datasources.context.RegistryDataSourceContext;
 import org.base.dao.datasources.variations.VariationPostgresql;
 
@@ -17,7 +18,7 @@ import org.base.dao.datasources.variations.VariationPostgresql;
  */
 public class DAOBaseFunctionsTest extends TestCase {
     
-    DAOBase dao = new DAOBase("postgres", null) {
+    DAOBase dao = new DAOBase(DataSourceTemplateFactory.mainDbContextName, null) {
 
         @Override
         public String getTableName() {
@@ -30,7 +31,7 @@ public class DAOBaseFunctionsTest extends TestCase {
         }
 
         @Override
-        protected Object getKeyValueExpression(Object obj) {
+        public Object getKeyValueExpression(Object obj) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -51,7 +52,7 @@ public class DAOBaseFunctionsTest extends TestCase {
     };
     
     static {
-        RegistryDataSourceContext.registerDataSourceContext("postgres", new DataSourceContext(new ConnectionPoolJDBC(), new VariationPostgresql("schema")));
+        RegistryDataSourceContext.registerDataSourceContext(DataSourceTemplateFactory.mainDbContextName, new DataSourceContext(new ConnectionPoolJDBC(), new VariationPostgresql("schema")));
     }
     
     public void testFunctionParseStatement() {
